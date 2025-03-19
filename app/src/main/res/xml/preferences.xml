@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory
+        android:title="@string/server_settings_title"
+        app:iconSpaceReserved="false">
+
+        <EditTextPreference
+            android:key="server_ip"
+            android:title="@string/server_ip_title"
+            android:summary="@string/server_ip_summary"
+            android:defaultValue="@string/server_ip_default"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="server_port"
+            android:title="@string/server_port_title"
+            android:summary="@string/server_port_summary"
+            android:defaultValue="@string/server_port_default"
+            android:inputType="number"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/geofence_settings_title"
+        app:iconSpaceReserved="false">
+
+        <SwitchPreferenceCompat
+            android:key="geofence_enabled"
+            android:title="@string/geofence_enabled_title"
+            android:summary="@string/geofence_enabled_summary"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
+
+        <EditTextPreference
+            android:key="geofence_lat"
+            android:title="@string/geofence_lat_title"
+            android:summary="@string/geofence_lat_summary"
+            android:defaultValue="52.3676"
+            android:inputType="numberDecimal|numberSigned"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="geofence_lon"
+            android:title="@string/geofence_lon_title"
+            android:summary="@string/geofence_lon_summary"
+            android:defaultValue="4.9041"
+            android:inputType="numberDecimal|numberSigned"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="geofence_radius"
+            android:title="@string/geofence_radius_title"
+            android:summary="@string/geofence_radius_summary"
+            android:defaultValue="100"
+            android:inputType="number"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="polling_frequency"
+            android:title="@string/polling_frequency_title"
+            android:summary="@string/polling_frequency_summary"
+            android:defaultValue="60000"
+            android:inputType="number"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <EditTextPreference
+            android:key="measurements_before_trigger"
+            android:title="@string/measurements_before_trigger_title"
+            android:summary="@string/measurements_before_trigger_summary"
+            android:defaultValue="3"
+            android:inputType="number"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

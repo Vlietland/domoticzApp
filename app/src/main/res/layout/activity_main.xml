@@ -1,83 +1,153 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center">
+    android:background="@color/colorBackground">
 
-    <TextView
-        android:text="Geofence actief"
-        android:textSize="20sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/alarm_text"
-        android:text="Alarm Text"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"/>
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <ImageView
-        android:id="@+id/alarm_image"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_marginTop="10dp"
-        android:contentDescription="Alarm Image"
-        android:visibility="gone"/>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <Button
-        android:id="@+id/button_open_gate"
-        android:text="Open Gate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <TextView
-        android:text="Configure Geofence"
-        android:textSize="18sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/input_geofence_lat"
-        android:hint="Enter Geofence Latitude"
+            <!-- Image Container with Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/image_card"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="4dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintHeight_percent="0.33">
+
+                <ImageView
+                    android:id="@+id/alarm_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"
+                    android:contentDescription="Alarm Image"
+                    android:visibility="gone"/>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Status Card -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/status_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                app:layout_constraintTop_toBottomOf="@id/image_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <TextView
+                        android:id="@+id/alarm_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Alarm Text"
+                        android:textSize="20sp"
+                        android:textColor="@color/textSecondary"
+                        android:gravity="center"
+                        android:textAlignment="center"/>
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Container -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"/>
+        android:layout_gravity="bottom"
+        android:orientation="vertical">
 
-    <EditText
-        android:id="@+id/input_geofence_lon"
-        android:hint="Enter Geofence Longitude"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="numberDecimal"/>
+        <!-- Geofence Status -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/geofence_status_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            app:cardElevation="2dp"
+            app:cardCornerRadius="8dp">
 
-    <EditText
-        android:id="@+id/input_geofence_radius"
-        android:hint="Enter Geofence Radius"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center_vertical">
 
-    <EditText
-        android:id="@+id/input_polling_frequency"
-        android:hint="Enter Polling Frequency (ms)"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"/>
+                <ImageView
+                    android:id="@+id/geofence_status_icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@android:drawable/ic_menu_mylocation"
+                    android:tint="@color/statusActive"/>
 
-    <EditText
-        android:id="@+id/input_measurements_before_trigger"
-        android:hint="Enter Measurements Before Trigger"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:inputType="number"/>
+                <TextView
+                    android:id="@+id/geofence_status_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:text="Geofence Active"
+                    android:textColor="@color/statusActive"
+                    android:textSize="16sp"/>
 
-    <Button
-        android:id="@+id/button_save_settings"
-        android:text="Save Settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"/>
-</LinearLayout>
+            </LinearLayout>
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Gate Button -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_open_gate"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_margin="16dp"
+                android:text="OPEN GATE"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                app:cornerRadius="8dp"
+                android:backgroundTint="@color/buttonBackground"
+                android:textColor="@color/buttonText"/>
+
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

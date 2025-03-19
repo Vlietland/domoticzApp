@@ -14,11 +14,12 @@
       {
         "label": "Install and Run on Android",
         "type": "shell",
-        "command": "adb install -r ./app/build/outputs/apk/debug/app-debug.apk && adb shell am start -n com.wiconic.domoticzapp/.MainActivity",
+        "command": "./run.sh",
         "group": {
           "kind": "test",
           "isDefault": true
         },
+        "dependsOn": ["Build APK"],
         "problemMatcher": []
       }
     ]

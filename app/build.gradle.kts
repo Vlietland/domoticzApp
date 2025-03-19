@@ -62,9 +62,6 @@ dependencies {
     // WorkManager
     implementation("androidx.work:work-runtime-ktx:2.9.0")
     
-    // Firebase Cloud Messaging for notifications
-    implementation("com.google.firebase:firebase-messaging:23.4.1")
-    
     // Network
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
@@ -77,4 +74,7 @@ dependencies {
     
     // Location
     implementation("com.google.android.gms:play-services-location:21.1.0")
+    
+    // Preferences
+    implementation("androidx.preference:preference-ktx:1.2.1")
 }

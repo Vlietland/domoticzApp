@@ -15,10 +15,58 @@
 -->
 <resources>
     <style name="Theme.Jetnews" parent="android:Theme.Material.NoActionBar"/>
-    <style name="Theme.DomoticzApp" parent="android:Theme.Material.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Theme.DomoticzApp" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Color attributes -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorError">@color/colorError</item>
+
+        <!-- Text appearance -->
+        <item name="android:textColorPrimary">@color/textPrimary</item>
+        <item name="android:textColorSecondary">@color/textSecondary</item>
+
+        <!-- Material shape attributes -->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.App.SmallComponent</item>
+        <item name="shapeAppearanceMediumComponent">@style/ShapeAppearance.App.MediumComponent</item>
+        <item name="shapeAppearanceLargeComponent">@style/ShapeAppearance.App.LargeComponent</item>
+
+        <!-- Material button style -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+        <item name="materialCardViewStyle">@style/Widget.App.CardView</item>
+    </style>
+
+    <!-- Shape appearances -->
+    <style name="ShapeAppearance.App.SmallComponent" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.LargeComponent" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <!-- Custom button style -->
+    <style name="Widget.App.Button" parent="Widget.MaterialComponents.Button">
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.05</item>
+        <item name="android:textSize">18sp</item>
+        <item name="cornerRadius">8dp</item>
+        <item name="elevation">4dp</item>
+    </style>
+
+    <!-- Custom card style -->
+    <style name="Widget.App.CardView" parent="Widget.MaterialComponents.CardView">
+        <item name="cardElevation">4dp</item>
+        <item name="cardCornerRadius">12dp</item>
+        <item name="contentPadding">0dp</item>
     </style>
 </resources>
