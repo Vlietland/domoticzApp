@@ -15,4 +15,10 @@
 -->
 <resources>
     <style name="Theme.Jetnews" parent="android:Theme.Material.NoActionBar"/>
+    <style name="Theme.DomoticzApp" parent="android:Theme.Material.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
 </resources>

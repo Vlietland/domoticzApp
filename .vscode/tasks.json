@@ -1,0 +1,25 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build APK",
+        "type": "shell",
+        "command": "./gradlew assembleDebug",
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      },
+      {
+        "label": "Install and Run on Android",
+        "type": "shell",
+        "command": "adb install -r ./app/build/outputs/apk/debug/app-debug.apk && adb shell am start -n com.wiconic.domoticzapp/.MainActivity",
+        "group": {
+          "kind": "test",
+          "isDefault": true
+        },
+        "problemMatcher": []
+      }
+    ]
+  }
