@@ -9,12 +9,7 @@
     
     <!-- Server Settings -->
     <string name="server_settings_title">Server Settings</string>
-    <string name="server_ip_title">Server IP Address</string>
-    <string name="server_ip_summary">Enter the IP address of your Domoticz server</string>
-    <string name="server_port_title">Server Port</string>
-    <string name="server_port_summary">Enter the WebSocket port of your Domoticz server</string>
-    <string name="server_ip_default">192.168.1.100</string>
-    <string name="server_port_default">8080</string>
+
 
     <!-- Geofence Settings -->
     <string name="geofence_settings_title">Geofence Settings</string>

@@ -8,20 +8,16 @@
 
         <EditTextPreference
             android:key="server_ip"
-            android:title="@string/server_ip_title"
-            android:summary="@string/server_ip_summary"
-            android:defaultValue="@string/server_ip_default"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            android:title="Server IP"
+            android:summary="IP address of the Domoticz server"
+            app:iconSpaceReserved="false" />
 
         <EditTextPreference
             android:key="server_port"
-            android:title="@string/server_port_title"
-            android:summary="@string/server_port_summary"
-            android:defaultValue="@string/server_port_default"
+            android:title="Server Port"
+            android:summary="Port of the Domoticz server"
             android:inputType="number"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
 
@@ -40,47 +36,38 @@
             android:key="geofence_lat"
             android:title="@string/geofence_lat_title"
             android:summary="@string/geofence_lat_summary"
-            android:defaultValue="52.3676"
             android:inputType="numberDecimal|numberSigned"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false" />
 
         <EditTextPreference
             android:key="geofence_lon"
             android:title="@string/geofence_lon_title"
             android:summary="@string/geofence_lon_summary"
-            android:defaultValue="4.9041"
             android:inputType="numberDecimal|numberSigned"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false" />
 
         <EditTextPreference
             android:key="geofence_radius"
             android:title="@string/geofence_radius_title"
             android:summary="@string/geofence_radius_summary"
-            android:defaultValue="100"
             android:inputType="number"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false" />
 
         <EditTextPreference
             android:key="polling_frequency"
             android:title="@string/polling_frequency_title"
             android:summary="@string/polling_frequency_summary"
-            android:defaultValue="60000"
             android:inputType="number"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false" />
 
         <EditTextPreference
             android:key="measurements_before_trigger"
             android:title="@string/measurements_before_trigger_title"
             android:summary="@string/measurements_before_trigger_summary"
-            android:defaultValue="3"
             android:inputType="number"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+            app:iconSpaceReserved="false" />
 
     </PreferenceCategory>
+
 
 </PreferenceScreen>

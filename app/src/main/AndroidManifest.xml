@@ -55,6 +55,13 @@
             </intent-filter>
         </receiver>
         
+        <!-- WebSocket Service -->
+        <service
+            android:name=".api.DomoticzWebSocketService"
+            android:exported="false" />
+        
     </application>
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

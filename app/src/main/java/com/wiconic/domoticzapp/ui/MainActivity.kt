@@ -1,115 +1,110 @@
 package com.wiconic.domoticzapp.ui
 
 import android.Manifest
-import android.view.View
-import android.widget.ImageView
-import com.wiconic.domoticzapp.api.AlarmPushHandler
-import com.wiconic.domoticzapp.api.GateOperationCallback
-import com.wiconic.domoticzapp.api.OpenGateHandler
-import android.widget.TextView
-import com.squareup.picasso.Picasso
-import android.content.pm.PackageManager
-import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import com.wiconic.domoticzapp.DomoticzApp
-import com.wiconic.domoticzapp.geofence.DynamicGeofenceManager
+import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
+import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.Button
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import androidx.appcompat.widget.Toolbar
+import com.wiconic.domoticzapp.DomoticzApp
 import com.wiconic.domoticzapp.R
+import com.wiconic.domoticzapp.api.AlarmPushHandler
+import com.wiconic.domoticzapp.api.GateOperationCallback
 import com.wiconic.domoticzapp.settings.DomoticzPreferenceManager
 import com.wiconic.domoticzapp.settings.GeofencePreferenceManager
+import com.wiconic.domoticzapp.ui.controller.CameraController
+import com.wiconic.domoticzapp.ui.controller.GateController
+import com.wiconic.domoticzapp.ui.controller.GeofenceController
+import com.wiconic.domoticzapp.ui.controller.SwipeGestureHandler
+import com.wiconic.domoticzapp.ui.observer.PreferenceObserver
 
 class MainActivity : AppCompatActivity(), GateOperationCallback {
-    private val preferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        when (key) {
-            DomoticzPreferenceManager.SERVER_IP_KEY, DomoticzPreferenceManager.SERVER_PORT_KEY -> {
-                // Reconnect WebSocket with new server settings
-                alarmPushHandler?.apply {
-                    cleanup()
-                    initialize(
-                        context = this@MainActivity,
-                        serverUrl = preferenceManager.getWebSocketUrl()
-                    )
-                }
-            }
-            GeofencePreferenceManager.GEOFENCE_ENABLED_KEY -> {
-                if (geofencePreferenceManager.isGeofenceEnabled()) {
-                    initializeGeofence()
-                } else {
-                    geofenceManager?.stopMonitoring()
-                }
-                updateGeofenceStatusUI()
-            }
-            GeofencePreferenceManager.GEOFENCE_LAT_KEY,
-            GeofencePreferenceManager.GEOFENCE_LON_KEY,
-            GeofencePreferenceManager.GEOFENCE_RADIUS_KEY,
-            GeofencePreferenceManager.POLLING_FREQUENCY_KEY,
-            GeofencePreferenceManager.MEASUREMENTS_BEFORE_TRIGGER_KEY -> {
-                if (geofencePreferenceManager.isGeofenceEnabled()) {
-                    updateGeofenceFromPreferences()
-                }
-            }
-        }
-    }
+
+    private lateinit var cameraImageView: ImageView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var preferenceManager: DomoticzPreferenceManager
     private lateinit var geofencePreferenceManager: GeofencePreferenceManager
-    private var geofenceManager: DynamicGeofenceManager? = null
-    private var alarmPushHandler: AlarmPushHandler? = null
-    
-    // Default values for geofence settings
-    private val defaultLat = 52.3676
-    private val defaultLon = 4.9041
-    private val defaultRadius = 100.0f
-    private val defaultPollingFrequency = 60000L // 1 minute in milliseconds
-    private val defaultMeasurementsBeforeTrigger = 3
+    private lateinit var alarmPushHandler: AlarmPushHandler
+
+    private lateinit var cameraController: CameraController
+    private lateinit var geofenceController: GeofenceController
+    private lateinit var gateController: GateController
+    private lateinit var swipeGestureHandler: SwipeGestureHandler
+    private lateinit var preferenceObserver: PreferenceObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        PreferenceManager.getDefaultSharedPreferences(this)
-            .registerOnSharedPreferenceChangeListener(preferenceChangeListener)
         super.onCreate(savedInstanceState)
         try {
             setContentView(R.layout.activity_main)
-            
-            // Set up toolbar
-            val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+            val toolbar = findViewById<Toolbar>(R.id.toolbar)
             setSupportActionBar(toolbar)
-            
+
+            cameraImageView = findViewById(R.id.cameraImageView)
+            swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+
             val app = application as DomoticzApp
-            // Initialize preferences
             preferenceManager = DomoticzPreferenceManager(this)
             geofencePreferenceManager = GeofencePreferenceManager(this)
-
-            // Set up geofence status UI
-            updateGeofenceStatusUI()
-
-            if (app.isGooglePlayServicesAvailable && geofencePreferenceManager.isGeofenceEnabled()) {
-                initializeGeofence()
-            } else if (!app.isGooglePlayServicesAvailable) {
-                Toast.makeText(this, "Google Play Services not available. Geofencing is disabled.", Toast.LENGTH_LONG).show()
-            }
-
-            // Initialize WebSocket connection
             alarmPushHandler = AlarmPushHandler().apply {
                 setMainActivity(this@MainActivity)
-                initialize(
-                    context = this@MainActivity,
-                    serverUrl = preferenceManager.getWebSocketUrl()
-                )
+                initialize(this@MainActivity, preferenceManager.getWebSocketUrl())
             }
 
-            // Initialize non-Google Play Services dependent features
+            cameraController = CameraController(this, cameraImageView, swipeRefreshLayout, alarmPushHandler)
+            geofenceController = GeofenceController(this, geofencePreferenceManager)
+            gateController = GateController(this, alarmPushHandler.webSocketService!!)
+            swipeGestureHandler = SwipeGestureHandler(cameraController)
+            // Initialize geofence controller first
+            if (app.isGooglePlayServicesAvailable && geofencePreferenceManager.isGeofenceEnabled()) {
+                geofenceController.initializeGeofence()
+            } else if (!app.isGooglePlayServicesAvailable) {
+                showToast("Google Play Services not available. Geofencing is disabled.")
+            }
+
+            preferenceObserver = PreferenceObserver(this, preferenceManager, geofencePreferenceManager, geofenceController, alarmPushHandler)
+
+            PreferenceManager.getDefaultSharedPreferences(this)
+                .registerOnSharedPreferenceChangeListener(preferenceObserver)
+
+            swipeRefreshLayout.setOnRefreshListener { cameraController.loadCameraImage() }
+
+            updateGeofenceStatusUI()
+
             initializeBasicFeatures()
+
+            cameraImageView.setOnTouchListener { _, event ->
+                swipeGestureHandler.handleSwipe(cameraImageView, event)
+            }
+
         } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error initializing app: ${e.message}", Toast.LENGTH_LONG).show()
+            handleInitializationError(e)
+        }
+    }
+
+    fun updateAlarmUI(alarmText: String, imageData: String?) {
+        try {
+            val alarmTextView = findViewById<TextView>(R.id.alarm_text)
+            alarmTextView.text = alarmText
+            cameraController.updateAlarmUI(imageData)
+        } catch (e: Exception) {
+            showToast("Error updating alarm UI: ${e.message}")
         }
     }
 
@@ -118,7 +113,6 @@ class MainActivity : AppCompatActivity(), GateOperationCallback {
             val statusCard = findViewById<View>(R.id.geofence_status_card)
             val statusIcon = findViewById<ImageView>(R.id.geofence_status_icon)
             val statusText = findViewById<TextView>(R.id.geofence_status_text)
-
             if (geofencePreferenceManager.isGeofenceEnabled()) {
                 statusCard.visibility = View.VISIBLE
                 statusIcon.setColorFilter(getColor(R.color.statusActive))
@@ -132,147 +126,20 @@ class MainActivity : AppCompatActivity(), GateOperationCallback {
         }
     }
 
-    private fun initializeGeofence() {
-        try {
-            updateGeofenceFromPreferences()
-            checkLocationPermission()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error initializing Google Play Services features: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-    }
-
     private fun initializeBasicFeatures() {
         try {
-            // Set up the Open Gate button
-            findViewById<Button>(R.id.button_open_gate)?.setOnClickListener {
-                try {
-                    val openGateHandler = OpenGateHandler()
-                    openGateHandler.setCallback(this)
-                    openGateHandler.openGate()
-                    Toast.makeText(this, getString(R.string.gate_opening), Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(this, getString(R.string.gate_error), Toast.LENGTH_SHORT).show()
-                }
+            val buttonOpenGate = findViewById<Button>(R.id.button_open_gate)
+            buttonOpenGate.setOnClickListener {
+                gateController.openGate(this)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error initializing basic features: ${e.message}", Toast.LENGTH_LONG).show()
+            handleInitializationError(e)
         }
     }
 
-    private fun initializeGeofenceManager(
-        lat: Double,
-        lon: Double,
-        radius: Float,
-        measurements: Int,
-        frequency: Long
-    ) {
-        try {
-            geofenceManager = DynamicGeofenceManager(
-                context = this,
-                geofenceCenterLat = lat,
-                geofenceCenterLon = lon,
-                geofenceRadius = radius,
-                measurementsBeforeTrigger = measurements,
-                pollingFrequency = frequency
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error initializing geofence: ${e.message}", Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun updateGeofenceFromPreferences() {
-        try {
-            // Stop current monitoring
-            geofenceManager?.stopMonitoring()
-
-            // Initialize geofence manager with values from preferences
-            initializeGeofenceManager(
-                geofencePreferenceManager.getLatitude(),
-                geofencePreferenceManager.getLongitude(),
-                geofencePreferenceManager.getRadius(),
-                geofencePreferenceManager.getMeasurementsBeforeTrigger(),
-                geofencePreferenceManager.getPollingFrequency()
-            )
-
-            // Restart monitoring if we have permission
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                geofenceManager?.startMonitoring()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error updating geofence: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    private fun checkLocationPermission() {
-        try {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                    LOCATION_PERMISSION_REQUEST_CODE
-                )
-            } else {
-                geofenceManager?.startMonitoring()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, getString(R.string.error_location_permission), Toast.LENGTH_LONG).show()
-        }
-    }
-
-    fun updateAlarmUI(alarmText: String, imageUrl: String?) {
-        try {
-            val alarmTextView = findViewById<TextView>(R.id.alarm_text)
-            val alarmImageView = findViewById<ImageView>(R.id.alarm_image)
-            
-            alarmTextView?.text = alarmText
-            
-            // Handle image loading and visibility
-            alarmImageView?.let { imageView ->
-                if (!imageUrl.isNullOrEmpty()) {
-                    imageView.visibility = View.VISIBLE
-                    Picasso.get()
-                        .load(imageUrl)
-                        .fit()
-                        .centerCrop()
-                        .into(imageView, object : com.squareup.picasso.Callback {
-                            override fun onSuccess() {
-                                // Ensure the image takes up 1/3 of the screen height
-                                val params = imageView.layoutParams
-                                params.height = (resources.displayMetrics.heightPixels * 0.33).toInt()
-                                imageView.layoutParams = params
-                            }
-                            override fun onError(e: Exception?) {
-                                imageView.visibility = View.GONE
-                                Log.e("MainActivity", "Error loading image: ${e?.message}")
-                            }
-                        })
-                } else {
-                    imageView.visibility = View.GONE
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error updating alarm UI: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    fun handleAlarmNotification(alarmText: String, imageUrl: String?) {
+    fun handleAlarmNotification(alarmText: String, imageData: String?) {
         runOnUiThread {
-            updateAlarmUI(alarmText, imageUrl)
+            updateAlarmUI(alarmText, imageData)
         }
     }
 
@@ -282,19 +149,7 @@ class MainActivity : AppCompatActivity(), GateOperationCallback {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        try {
-            if (requestCode == LOCATION_PERMISSION_REQUEST_CODE && 
-                grantResults.isNotEmpty() && 
-                grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                geofenceManager?.startMonitoring()
-                Toast.makeText(this, "Location permission granted, geofence monitoring started", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Location permission denied, geofence monitoring disabled", Toast.LENGTH_SHORT).show()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "Error handling permission result: ${e.message}", Toast.LENGTH_SHORT).show()
-        }
+        geofenceController.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -313,31 +168,31 @@ class MainActivity : AppCompatActivity(), GateOperationCallback {
     }
 
     override fun onDestroy() {
-        try {
-            super.onDestroy()
-            geofenceManager?.stopMonitoring()
-            alarmPushHandler?.cleanup()
-            PreferenceManager.getDefaultSharedPreferences(this)
-                .unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        super.onDestroy()
+        geofenceController.onDestroy()
+        alarmPushHandler.cleanup()
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .unregisterOnSharedPreferenceChangeListener(preferenceObserver)
     }
 
-    // GateOperationCallback implementation
     override fun onGateOperationSuccess() {
         runOnUiThread {
-            Toast.makeText(this, getString(R.string.gate_opened), Toast.LENGTH_SHORT).show()
+            showToast(getString(R.string.gate_opened))
         }
     }
 
     override fun onGateOperationFailure(errorMessage: String) {
         runOnUiThread {
-            Toast.makeText(this, "${getString(R.string.gate_error)}: $errorMessage", Toast.LENGTH_LONG).show()
+            showToast("${getString(R.string.gate_error)}: $errorMessage")
         }
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1001
+    private fun handleInitializationError(e: Exception) {
+        e.printStackTrace()
+        showToast("Error initializing app: ${e.message}")
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

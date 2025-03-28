@@ -6,6 +6,8 @@ PACKAGE_NAME="com.wiconic.domoticzapp"
 MAIN_ACTIVITY=".ui.MainActivity"
 LOG_FILE="output.log"
 
+./gradlew assembleDebug
+
 echo "Installing APK..."
 adb install -r "$APK_PATH"
 

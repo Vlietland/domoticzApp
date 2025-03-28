@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "GeofenceApp"
+rootProject.name = "DomoticzApp"
 include(":app")

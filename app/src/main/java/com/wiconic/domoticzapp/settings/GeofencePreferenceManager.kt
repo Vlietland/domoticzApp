@@ -3,30 +3,37 @@ package com.wiconic.domoticzapp.settings
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
+import android.util.Log
 
 class GeofencePreferenceManager(context: Context) {
     private val prefs: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+    private val domoticzPreferenceManager = DomoticzPreferenceManager(context)
 
     fun getLatitude(): Double {
-        return prefs.getString(GEOFENCE_LAT_KEY, DEFAULT_LAT)?.toDoubleOrNull() ?: DEFAULT_LAT.toDouble()
+        val defaultLat = domoticzPreferenceManager.getEnvValue("GEOFENCE_DEFAULT_LAT")!!
+        return prefs.getString(GEOFENCE_LAT_KEY, defaultLat)?.toDoubleOrNull() ?: defaultLat.toDouble()
     }
 
     fun getLongitude(): Double {
-        return prefs.getString(GEOFENCE_LON_KEY, DEFAULT_LON)?.toDoubleOrNull() ?: DEFAULT_LON.toDouble()
+        val defaultLon = domoticzPreferenceManager.getEnvValue("GEOFENCE_DEFAULT_LON")!!
+        return prefs.getString(GEOFENCE_LON_KEY, defaultLon)?.toDoubleOrNull() ?: defaultLon.toDouble()
     }
 
     fun getRadius(): Float {
-        return prefs.getString(GEOFENCE_RADIUS_KEY, DEFAULT_RADIUS)?.toFloatOrNull() ?: DEFAULT_RADIUS.toFloat()
+        val defaultRadius = domoticzPreferenceManager.getEnvValue("GEOFENCE_DEFAULT_RADIUS")!!
+        return prefs.getString(GEOFENCE_RADIUS_KEY, defaultRadius)?.toFloatOrNull() ?: defaultRadius.toFloat()
     }
 
     fun getPollingFrequency(): Long {
-        return prefs.getString(POLLING_FREQUENCY_KEY, DEFAULT_POLLING_FREQUENCY)?.toLongOrNull() 
-            ?: DEFAULT_POLLING_FREQUENCY.toLong()
+        val defaultFrequency = domoticzPreferenceManager.getEnvValue("GEOFENCE_DEFAULT_POLLING_FREQUENCY")!!
+        return prefs.getString(POLLING_FREQUENCY_KEY, defaultFrequency)?.toLongOrNull() 
+            ?: defaultFrequency.toLong()
     }
 
     fun getMeasurementsBeforeTrigger(): Int {
-        return prefs.getString(MEASUREMENTS_BEFORE_TRIGGER_KEY, DEFAULT_MEASUREMENTS)?.toIntOrNull() 
-            ?: DEFAULT_MEASUREMENTS.toInt()
+        val defaultMeasurements = domoticzPreferenceManager.getEnvValue("GEOFENCE_DEFAULT_MEASUREMENTS_BEFORE_TRIGGER")!!
+        return prefs.getString(MEASUREMENTS_BEFORE_TRIGGER_KEY, defaultMeasurements)?.toIntOrNull() 
+            ?: defaultMeasurements.toInt()
     }
 
     fun isGeofenceEnabled(): Boolean {
@@ -44,11 +51,5 @@ class GeofencePreferenceManager(context: Context) {
         const val GEOFENCE_RADIUS_KEY = "geofence_radius"
         const val POLLING_FREQUENCY_KEY = "polling_frequency"
         const val MEASUREMENTS_BEFORE_TRIGGER_KEY = "measurements_before_trigger"
-
-        private const val DEFAULT_LAT = "52.3676"
-        private const val DEFAULT_LON = "4.9041"
-        private const val DEFAULT_RADIUS = "100"
-        private const val DEFAULT_POLLING_FREQUENCY = "60000"
-        private const val DEFAULT_MEASUREMENTS = "3"
     }
 }
