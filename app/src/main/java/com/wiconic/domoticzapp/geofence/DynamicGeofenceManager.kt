@@ -43,31 +43,9 @@ class DynamicGeofenceManager(
         override fun onProviderDisabled(provider: String) {}
     }
 
-    private val pollingRunnable = object : Runnable {
-        override fun run() {
-            requestLocationUpdate()
-            if (isMonitoring) {
-                handler.postDelayed(this, pollingFrequency)
-            }
-        }
-    }
-
     fun startMonitoring() {
         if (isMonitoring) return
 
-        isMonitoring = true
-        isTriggered = false
-        consecutiveInAreaCount = 0
-
-        // Start polling for location updates
-        handler.post(pollingRunnable)
-
-        Log.i("DynamicGeofenceManager", "Started monitoring with radius $geofenceRadius, " +
-                "measurements before trigger $measurementsBeforeTrigger, " +
-                "polling frequency $pollingFrequency ms")
-    }
-
-    private fun requestLocationUpdate() {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
@@ -77,14 +55,24 @@ class DynamicGeofenceManager(
             return
         }
 
+        isMonitoring = true
+        isTriggered = false
+        consecutiveInAreaCount = 0
+
         try {
-            locationManager.requestSingleUpdate(
+            locationManager.requestLocationUpdates(
                 LocationManager.GPS_PROVIDER,
-                locationListener,
-                Looper.getMainLooper()
+                pollingFrequency,
+                0f, // Minimum distance change for updates (in meters)
+                locationListener
             )
+            Log.i("DynamicGeofenceManager", "Started monitoring with radius $geofenceRadius, " +
+                    "measurements before trigger $measurementsBeforeTrigger, " +
+                    "polling frequency $pollingFrequency ms")
+        } catch (e: SecurityException) {
+            Log.e("DynamicGeofenceManager", "Security exception starting location updates: ${e.message}")
         } catch (e: Exception) {
-            Log.e("DynamicGeofenceManager", "Error requesting location update: ${e.message}")
+            Log.e("DynamicGeofenceManager", "Error requesting location updates: ${e.message}")
         }
     }
 
@@ -139,7 +127,6 @@ class DynamicGeofenceManager(
         if (!isMonitoring) return
 
         isMonitoring = false
-        handler.removeCallbacks(pollingRunnable)
 
         if (ActivityCompat.checkSelfPermission(
                 context,

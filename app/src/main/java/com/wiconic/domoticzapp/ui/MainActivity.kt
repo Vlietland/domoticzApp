@@ -72,10 +72,8 @@ class MainActivity : AppCompatActivity(), GateOperationCallback {
             gateController = GateController(this, alarmPushHandler.webSocketService!!)
             swipeGestureHandler = SwipeGestureHandler(cameraController)
             // Initialize geofence controller first
-            if (app.isGooglePlayServicesAvailable && geofencePreferenceManager.isGeofenceEnabled()) {
+            if (geofencePreferenceManager.isGeofenceEnabled()) {
                 geofenceController.initializeGeofence()
-            } else if (!app.isGooglePlayServicesAvailable) {
-                showToast("Google Play Services not available. Geofencing is disabled.")
             }
 
             preferenceObserver = PreferenceObserver(this, preferenceManager, geofencePreferenceManager, geofenceController, alarmPushHandler)

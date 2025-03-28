@@ -27,5 +27,6 @@ sleep 1
 echo "Capturing logcat output to $LOG_FILE..."
 adb logcat -d | grep -E 'com.wiconic.domoticzapp|AndroidRuntime|Exception' > "$LOG_FILE"
 
-echo "Logcat captured. Check $LOG_FILE for details."
+adb shell logcat --pid=$(adb shell pidof com.wiconic.domoticzapp)
+
  
