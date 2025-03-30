@@ -1,4 +1,4 @@
-package com.wiconic.domoticzapp.gui.viewer
+package com.wiconic.domoticzapp.ui.view
 
 import android.content.Context
 import android.util.Log
