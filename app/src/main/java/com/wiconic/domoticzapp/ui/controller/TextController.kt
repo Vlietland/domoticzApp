@@ -1,11 +1,14 @@
 package com.wiconic.domoticzapp.ui.controller
 
+import android.util.Log
+import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Log
 
-class TextController : ViewModel() {
+class TextController(
+    private val messagesTextView: TextView
+) : ViewModel() {
 
     private val _messages = MutableLiveData<List<String>>(emptyList())
     val messages: LiveData<List<String>> = _messages
@@ -14,6 +17,8 @@ class TextController : ViewModel() {
         val currentMessages = _messages.value?.toMutableList() ?: mutableListOf()
         currentMessages.add(message)
         _messages.value = currentMessages.toList()
+        
+        messagesTextView.text = currentMessages.joinToString("\n")
         Log.i(TAG, "Message added: $message")
     }
 

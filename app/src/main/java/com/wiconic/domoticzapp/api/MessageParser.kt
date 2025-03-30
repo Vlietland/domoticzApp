@@ -27,9 +27,9 @@ class MessageParser(
 
     private fun handleNotification(json: JSONObject) {
         val messageText = json.optString("message", "Unknown notification")
-        val imageData = json.optString("imageData", null)
+        val imageData = json.optString("imageData", "")
 
-        if (imageData != null && imageData.isNotEmpty()) {
+        if (imageData.isNotEmpty()) {
             cameraController.handleIncomingImage(imageData)
             Log.i(TAG, "Image notification received with message: $messageText")
         } else {

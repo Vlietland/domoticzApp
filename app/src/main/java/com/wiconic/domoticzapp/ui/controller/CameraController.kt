@@ -1,13 +1,16 @@
 package com.wiconic.domoticzapp.ui.controller
 
 import android.content.Context
+import android.util.Log
+import android.widget.ImageView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
-import com.wiconic.domoticzapp.ui.viewer.CameraImageViewer 
 
 class CameraController(
     val context: Context,
-    private val cameraImageViewer: CameraImageViewer,
-    private val serverConnection: DomoticzAppServerConnection,
+    private val cameraImageView: ImageView,
+    private val swipeRefreshLayout: SwipeRefreshLayout,
+    private val serverConnection: DomoticzAppServerConnection
 ) {
 
     private var currentCameraIndex = 0
@@ -16,21 +19,17 @@ class CameraController(
         "gardensouth", "terraceliving", "gardenwest", "backdoor"
     )
 
+    init {
+        swipeRefreshLayout.setOnRefreshListener { onImageLoading() }
+    }
+
     fun loadNextImage() {
-        if (currentCameraIndex < cameraIds.size - 1) {
-            currentCameraIndex++
-        } else {
-            currentCameraIndex = 0
-        }
+        if (currentCameraIndex < cameraIds.size - 1) currentCameraIndex++ else currentCameraIndex = 0
         loadCameraImage()
     }
 
     fun loadPreviousImage() {
-        if (currentCameraIndex > 0) {
-            currentCameraIndex--
-        } else {
-            currentCameraIndex = cameraIds.size - 1
-        }
+        if (currentCameraIndex > 0) currentCameraIndex-- else currentCameraIndex = cameraIds.size - 1
         loadCameraImage()
     }
 
@@ -42,12 +41,24 @@ class CameraController(
         val cameraId = cameraIds[currentCameraIndex]
         val message = "{\"type\": \"getCameraImage\", \"cameraId\": \"$cameraId\"}"
         serverConnection.sendMessage(message)
-
-        // Notify the viewer that a new image is being loaded
-        cameraImageViewer.onImageLoading()
+        onImageLoading()
     }
 
     fun handleIncomingImage(imageData: String) {
-        cameraImageViewer.displayImage(imageData)
-    }    
+        displayImage(imageData)
+    }
+
+    private fun onImageLoading() {
+        swipeRefreshLayout.isRefreshing = true
+        Log.d(TAG, "Image loading started.")
+    }
+
+    private fun displayImage(imageData: String) {
+        swipeRefreshLayout.isRefreshing = false
+        Log.d(TAG, "Image displayed successfully.")
+    }
+
+    companion object {
+        private const val TAG = "CameraController"
+    }
 }

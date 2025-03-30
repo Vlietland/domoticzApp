@@ -13,13 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.ui.view.CameraImageViewer
 import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 import com.wiconic.domoticzapp.api.MessageParser
 import com.wiconic.domoticzapp.settings.AppPreferenceManager
 import com.wiconic.domoticzapp.ui.controller.CameraController
 import com.wiconic.domoticzapp.ui.controller.GateController
-import com.wiconic.domoticzapp.ui.controller.SwipeGestureHandler
+import com.wiconic.domoticzapp.ui.controller.SwipeGestureController
 import com.wiconic.domoticzapp.ui.controller.TextController
 import com.wiconic.domoticzapp.ui.controller.GeofenceController
 import com.wiconic.domoticzapp.ui.observer.PreferenceObserver
@@ -29,12 +28,16 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
 
     private lateinit var cameraController: CameraController
-    private lateinit var gateController: GateController
-    private lateinit var swipeGestureHandler: SwipeGestureHandler
+    private lateinit var swipeGestureController: SwipeGestureController
     private lateinit var textController: TextController
+    private lateinit var messagesTextView: TextView
+    private lateinit var cameraImageView: ImageView
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var geofenceController: GeofenceController
-    private lateinit var domoticzAppServerConnection: DomoticzAppServerConnection
+    private lateinit var gateController: GateController
+    private lateinit var openGateButton: Button
     private lateinit var messageParser: MessageParser
+    private lateinit var domoticzAppServerConnection: DomoticzAppServerConnection
     private lateinit var preferenceObserver: PreferenceObserver
     private lateinit var appPreferenceManager: AppPreferenceManager
 
@@ -44,21 +47,20 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
 
         appPreferenceManager = AppPreferenceManager(this)
-        val cameraImageView = findViewById<ImageView>(R.id.cameraImageView)
-        val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
-        val messagesTextView = findViewById<TextView>(R.id.messages)
-        val cameraImageViewer = CameraImageViewer(this, cameraImageView, swipeRefreshLayout)
 
-        messageParser = MessageParser()
+        cameraImageView = findViewById<ImageView>(R.id.cameraImageView)
+        swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
+        cameraController = CameraController(this, cameraImageView, swipeRefreshLayout, domoticzAppServerConnection)
+
+        messagesTextView = findViewById<TextView>(R.id.messages)
+        textController = TextController(messagesTextView)
+
+        messageParser = MessageParser(cameraController, textController)
         domoticzAppServerConnection = DomoticzAppServerConnection(messageParser)
 
-        cameraController = CameraController(this, cameraImageViewer, domoticzAppServerConnection)
-        textController = TextController()
-        messageParser.setupControllers(cameraController, textController)
-
-        val openGateButton = findViewById<Button>(R.id.button_open_gate)
+        openGateButton = findViewById<Button>(R.id.button_open_gate)
         gateController = GateController(domoticzAppServerConnection, openGateButton)
-        swipeGestureHandler = SwipeGestureHandler(cameraController)
+        swipeGestureController = SwipeGestureController(this, cameraController)
 
         lifecycleScope.launch(Dispatchers.IO) { domoticzAppServerConnection.connect(appPreferenceManager.getWebSocketUrl()) }
 

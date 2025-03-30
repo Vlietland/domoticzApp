@@ -2,7 +2,7 @@ package com.wiconic.domoticzapp.ui.controller
 
 import android.content.Context
 import android.util.Log
-import com.wiconic.domoticzapp.geofence.GeofenceModel
+import com.wiconic.domoticzapp.model.GeofenceModel
 import com.wiconic.domoticzapp.settings.AppPreferenceManager
 import com.wiconic.domoticzapp.ui.controller.GateController
 
