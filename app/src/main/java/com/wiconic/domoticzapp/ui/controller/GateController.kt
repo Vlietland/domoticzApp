@@ -1,29 +1,35 @@
 package com.wiconic.domoticzapp.ui.controller
 
-import android.content.Context
-import android.widget.Toast
-import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.api.DomoticzWebSocketService
-import com.wiconic.domoticzapp.api.GateOperationCallback
-import com.wiconic.domoticzapp.api.OpenGateHandler
+import android.util.Log
+import android.widget.Button
+import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 
 class GateController(
-    private val context: Context,
-    private val webSocketService: DomoticzWebSocketService
+    private val domoticzAppServerConnection: DomoticzAppServerConnection,
+    private val openGateButton: Button // Injected button
 ) {
 
-    fun openGate(callback: GateOperationCallback) {
-        try {
-            val openGateHandler = OpenGateHandler(context, webSocketService)
-            openGateHandler.setCallback(callback)
-            openGateHandler.openGate()
-            showToast(context.getString(R.string.gate_opening))
-        } catch (e: Exception) {
-            showToast(context.getString(R.string.gate_error))
+    init {
+        // Setting up click listener within the GateController
+        openGateButton.setOnClickListener { openGate() }
+    }
+
+    fun openGate() {
+        val message = """
+            {
+                "type": "opengate"
+            }
+        """.trimIndent()
+
+        val isSent = domoticzAppServerConnection.sendMessage(message)
+        if (isSent) {
+            Log.d(TAG, "Gate open request sent successfully.")
+        } else {
+            Log.e(TAG, "Failed to send gate open request.")
         }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    companion object {
+        private const val TAG = "GateController"
     }
 }

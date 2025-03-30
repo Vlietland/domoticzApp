@@ -13,7 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.gui.viewer.CameraImageViewer
+import com.wiconic.domoticzapp.ui.viewer.CameraImageViewer
 import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 import com.wiconic.domoticzapp.api.MessageParser
 import com.wiconic.domoticzapp.settings.AppPreferenceManager

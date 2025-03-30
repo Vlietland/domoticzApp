@@ -39,12 +39,6 @@
             android:theme="@style/Theme.DomoticzApp"
             android:parentActivityName=".ui.MainActivity" />
             
-        <!-- Geofence broadcast receiver -->
-        <receiver
-            android:name=".geofence.GeofenceBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true" />
-            
         <!-- Boot completed receiver -->
         <receiver
             android:name=".BootCompletedReceiver"
@@ -61,7 +55,5 @@
             android:exported="false" />
         
     </application>
-
-    <uses-permission android:name="android.permission.CAMERA" />
 
 </manifest>

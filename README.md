@@ -4,8 +4,8 @@ DomoticzApp is a mobile application designed to interact with a Domoticz server.
 
 ## Features
 
-1. **Receive Notifications**: Get notifications from the Domoticz server when an alarm is triggered.
-2. **Receive Optional Images**: Receive an optional image from the Domoticz server when an alarm is triggered.
+1. **Receive Notifications**: Get notifications from the Domoticz server when an event is triggered.
+2. **Receive Optional Images**: Receive an optional image from the Domoticz server when an event is triggered.
 3. **Gate Control**: A button to open the gate.
 4. **Proximity Trigger**: Send a one-time trigger from the app to the Domoticz server when the app is near the gate, until the app leaves the area.
 5. **Settings**: Configure the geofence location, radius, number of measurements within the area before the trigger is activated, and the polling frequency.

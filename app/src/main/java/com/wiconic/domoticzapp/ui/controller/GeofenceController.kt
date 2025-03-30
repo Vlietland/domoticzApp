@@ -1,95 +1,63 @@
 package com.wiconic.domoticzapp.ui.controller
 
-import android.Manifest
 import android.content.Context
-import android.content.pm.PackageManager
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import com.wiconic.domoticzapp.geofence.DynamicGeofenceManager
-import com.wiconic.domoticzapp.settings.GeofencePreferenceManager
+import android.util.Log
+import com.wiconic.domoticzapp.geofence.GeofenceModel
+import com.wiconic.domoticzapp.settings.AppPreferenceManager
+import com.wiconic.domoticzapp.ui.controller.GateController
 
 class GeofenceController(
     private val context: Context,
-    private val geofencePreferenceManager: GeofencePreferenceManager
+    private val preferenceManager: AppPreferenceManager,
+    private val gateController: GateController
 ) {
-    private var geofenceManager: DynamicGeofenceManager? = null
-    private val LOCATION_PERMISSION_REQUEST_CODE = 1001
+
+    private var geofenceModel: GeofenceModel? = null
+    private var isMonitoring = false
+
+    companion object {
+        private const val TAG = "GeofenceController"
+    }
 
     fun initializeGeofence() {
-        updateGeofenceFromPreferences()
-        checkLocationPermission()
+        val centerLat = preferenceManager.getGeofenceCenterLat()
+        val centerLon = preferenceManager.getGeofenceCenterLon()
+        val radius = preferenceManager.getGeofenceRadius()
+        val measurementsBeforeTrigger = 3
+
+        geofenceModel = GeofenceModel(
+            geofenceCenterLat = centerLat,
+            geofenceCenterLon = centerLon,
+            geofenceRadius = radius,
+            measurementsBeforeTrigger = measurementsBeforeTrigger,
+            controller = this  // Controller reference passed for triggering
+        )
+
+        Log.i(TAG, "Geofence initialized at ($centerLat, $centerLon) with radius $radius meters")
     }
 
-    fun removeGeofence() {
-        geofenceManager?.stopMonitoring()
-    }
+    fun startMonitoring() {
+        if (isMonitoring) return
 
-    private fun initializeGeofenceManager(
-        lat: Double,
-        lon: Double,
-        radius: Float,
-        measurements: Int,
-        frequency: Long
-    ) {
-        geofenceManager = DynamicGeofenceManager(context, lat, lon, radius, measurements, frequency)
-    }
-
-    private fun updateGeofenceFromPreferences() {
-        try {
-            geofenceManager?.stopMonitoring()
-            initializeGeofenceManager(
-                geofencePreferenceManager.getLatitude(),
-                geofencePreferenceManager.getLongitude(),
-                geofencePreferenceManager.getRadius(),
-                geofencePreferenceManager.getMeasurementsBeforeTrigger(),
-                geofencePreferenceManager.getPollingFrequency()
-            )
-            if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                geofenceManager?.startMonitoring()
-            }
-        } catch (e: Exception) {
-            showToast("Error updating geofence: ${e.message}")
+        val geofencingEnabled = preferenceManager.getGeofenceEnabled()
+        if (!geofencingEnabled) {
+            Log.i(TAG, "Geofencing is disabled in settings. Not starting monitoring.")
+            return
         }
+
+        isMonitoring = true
+        Log.i(TAG, "Geofence monitoring started.")
     }
 
-    private fun checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (context is AppCompatActivity) {
-                ActivityCompat.requestPermissions(
-                    context, 
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 
-                    LOCATION_PERMISSION_REQUEST_CODE
-                )
-            } else {
-                showToast("Cannot request location permission")
-            }
-        } else {
-            geofenceManager?.startMonitoring()
-        }
+    fun stopMonitoring() {
+        if (!isMonitoring) return
+
+        isMonitoring = false
+        Log.i(TAG, "Geofence monitoring stopped.")
     }
 
-    fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                geofenceManager?.startMonitoring()
-                showToast("Location permission granted, geofence monitoring started")
-            } else {
-                showToast("Location permission denied, geofence monitoring disabled")
-            }
-        }
-    }
-
-    fun onDestroy() {
-        geofenceManager?.stopMonitoring()
-    }
-
-    private fun showToast(message: String) {
-        Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+    fun onGeofenceTriggered() {
+        Log.i(TAG, "Handling geofence trigger event in the controller.")
+        gateController.openGate()
     }
 }
