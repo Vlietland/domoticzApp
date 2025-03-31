@@ -52,12 +52,26 @@ class DomoticzAppServerConnection(private val messageParser: MessageParser) {
     }
 
     fun sendMessage(message: String): Boolean {
-        return if (isConnected) {
-            webSocket?.send(message) ?: false
-        } else {
+        if (!isConnected || webSocket == null) {
             Log.e(TAG, "Unable to send message, WebSocket is not connected")
-            false
+            return false
         }
+
+        if (webSocket!!.queueSize() > 0) {
+            Log.w(TAG, "WebSocket message queue is full. Messages might be delayed.")
+        }
+        val success = webSocket!!.send(message)
+
+        if (!success) {
+            Log.e(TAG, "Failed to send message via WebSocket. Attempting to reconnect.")
+            reconnect()  // Optionally implement a reconnect mechanism
+        }
+        return success
+    }
+
+    private fun reconnect() {
+        disconnect()
+        connect(serverUrl)
     }
 
     fun disconnect() {

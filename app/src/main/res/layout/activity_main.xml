@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -23,83 +22,55 @@
         android:adjustViewBounds="true"
         android:contentDescription="Camera Image"
         android:scaleType="fitCenter"
+        android:clickable="true"
+        android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefreshLayout"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/notification_card"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
         app:layout_constraintBottom_toTopOf="@id/button_open_gate"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/button_open_gate"
+        app:layout_constraintStart_toStartOf="@id/button_open_gate"
         app:layout_constraintTop_toBottomOf="@id/cameraImageView">
 
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-            <LinearLayout
+            <!-- Fixed Header TextView -->
+            <TextView
+                android:id="@+id/fixed_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:padding="12dp"
+                android:background="#6200EE"
+                android:text="Notification Log"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/message_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
+            <!-- Notification Message TextView -->
+            <TextView
+                android:id="@+id/messages"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="12dp"
+                android:text="No notifications yet."
+                android:textSize="16sp"
+                android:textColor="#000000" />
 
-                <TextView
-                    android:id="@+id/messages"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:textSize="16sp" />
+        </LinearLayout>
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/geofence_status_card"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="16dp">
-
-                        <ImageView
-                            android:id="@+id/geofence_status_icon"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
-                            android:layout_gravity="center_vertical"
-                            android:contentDescription="Geofence Status" />
-
-                        <TextView
-                            android:id="@+id/geofence_status_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginStart="8dp"
-                            android:textSize="16sp" />
-                    </LinearLayout>
-                </androidx.cardview.widget.CardView>
-
-
-
-            </LinearLayout>
-
-        </androidx.core.widget.NestedScrollView>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </androidx.cardview.widget.CardView>
 
     <Button
         android:id="@+id/button_open_gate"
@@ -111,4 +82,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

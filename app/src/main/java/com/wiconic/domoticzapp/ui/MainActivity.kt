@@ -9,31 +9,34 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.cardview.widget.CardView
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.wiconic.domoticzapp.R
 import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 import com.wiconic.domoticzapp.api.MessageParser
 import com.wiconic.domoticzapp.settings.AppPreferenceManager
 import com.wiconic.domoticzapp.ui.controller.CameraController
 import com.wiconic.domoticzapp.ui.controller.GateController
-import com.wiconic.domoticzapp.ui.controller.SwipeGestureController
+import com.wiconic.domoticzapp.ui.controller.CameraSwipeController
+import com.wiconic.domoticzapp.ui.controller.NotificationSwipeController
 import com.wiconic.domoticzapp.ui.controller.TextController
 import com.wiconic.domoticzapp.ui.controller.GeofenceController
 import com.wiconic.domoticzapp.ui.observer.PreferenceObserver
+import com.wiconic.domoticzapp.ui.SettingsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var cameraController: CameraController
-    private lateinit var swipeGestureController: SwipeGestureController
+    private lateinit var cameraSwipeController: CameraSwipeController
     private lateinit var textController: TextController
     private lateinit var messagesTextView: TextView
     private lateinit var cameraImageView: ImageView
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var notificationCardView: CardView
     private lateinit var geofenceController: GeofenceController
+    private lateinit var notificationSwipeController: NotificationSwipeController
     private lateinit var gateController: GateController
     private lateinit var openGateButton: Button
     private lateinit var messageParser: MessageParser
@@ -42,24 +45,26 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appPreferenceManager: AppPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-       super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
 
         appPreferenceManager = AppPreferenceManager(this)
 
         cameraImageView = findViewById(R.id.cameraImageView)
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
         messagesTextView = findViewById(R.id.messages)
         openGateButton = findViewById(R.id.button_open_gate)
+        notificationCardView = findViewById(R.id.notification_card)
 
         messageParser = MessageParser()
         domoticzAppServerConnection = DomoticzAppServerConnection(messageParser)
 
-        cameraController = CameraController(this, cameraImageView, swipeRefreshLayout, domoticzAppServerConnection)
-        swipeGestureController = SwipeGestureController(this, cameraController)
-        cameraImageView.setOnTouchListener(swipeGestureController)
+        cameraController = CameraController(this, cameraImageView, domoticzAppServerConnection)
+        cameraSwipeController = CameraSwipeController(this, cameraController, cameraImageView)
+        cameraImageView.setOnTouchListener(cameraSwipeController)
         textController = TextController(messagesTextView)
+        notificationSwipeController = NotificationSwipeController(this, notificationCardView, messagesTextView)
+        notificationCardView.setOnTouchListener(notificationSwipeController)
 
         gateController = GateController(domoticzAppServerConnection, openGateButton)
         geofenceController = GeofenceController(this, appPreferenceManager, gateController)
@@ -76,7 +81,6 @@ class MainActivity : AppCompatActivity() {
         preferenceObserver = PreferenceObserver(this, appPreferenceManager, geofenceController, domoticzAppServerConnection)
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferenceObserver)
 
-        swipeRefreshLayout.setOnRefreshListener { cameraController.loadCameraImage() }
         openGateButton.setOnClickListener { gateController.openGate() }
 
         cameraController.loadNewImageFromCurrentCamera()

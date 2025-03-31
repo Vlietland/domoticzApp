@@ -37,16 +37,6 @@
             android:label="@string/settings_title"
             android:theme="@style/Theme.DomoticzApp"
             android:parentActivityName=".ui.MainActivity" />
-            
-        <!-- Boot completed receiver -->
-        <receiver
-            android:name=".BootCompletedReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
         
         <!-- WebSocket Service -->
         <service

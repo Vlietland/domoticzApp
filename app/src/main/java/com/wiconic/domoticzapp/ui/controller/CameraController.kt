@@ -5,13 +5,11 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 
 class CameraController(
     val context: Context,
     private val cameraImageView: ImageView,
-    private val swipeRefreshLayout: SwipeRefreshLayout,
     private val serverConnection: DomoticzAppServerConnection
 ) {
 
@@ -23,10 +21,6 @@ class CameraController(
 
     init {
         Log.d(TAG, "CameraController initialized with ${cameraIds.size} cameras.")
-        swipeRefreshLayout.setOnRefreshListener { 
-            Log.d(TAG, "Swipe refresh triggered, loading current camera image.")
-            onImageLoading() 
-        }
     }
 
     fun loadNextImage() {
@@ -53,7 +47,7 @@ class CameraController(
         Log.d(TAG, "Requesting camera image for Camera ID: $cameraId with message: $message")
         serverConnection.sendMessage(message)
         
-        onImageLoading()
+        displayImageLoading()
     }
 
     fun handleIncomingImage(imageData: String) {
@@ -61,13 +55,11 @@ class CameraController(
         displayImage(imageData)
     }
 
-    private fun onImageLoading() {
-        swipeRefreshLayout.isRefreshing = true
-        Log.d(TAG, "Image loading started. SwipeRefreshLayout set to refreshing state.")
+    private fun displayImageLoading() {
+        Log.d(TAG, "Image loading started.")
     }
 
     private fun displayImage(imageData: String) {
-        swipeRefreshLayout.isRefreshing = false
         Log.d(TAG, "Attempting to decode and display image.")
 
         try {
