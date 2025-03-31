@@ -78,6 +78,8 @@ class MainActivity : AppCompatActivity() {
 
         swipeRefreshLayout.setOnRefreshListener { cameraController.loadCameraImage() }
         openGateButton.setOnClickListener { gateController.openGate() }
+
+        cameraController.loadNewImageFromCurrentCamera()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

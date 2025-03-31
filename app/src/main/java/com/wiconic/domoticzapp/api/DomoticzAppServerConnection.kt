@@ -30,6 +30,7 @@ class DomoticzAppServerConnection(private val messageParser: MessageParser) {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             isConnected = true
             Log.d(TAG, "WebSocket connected successfully")
+            messageParser.onWebsocketOpen()
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {

@@ -15,6 +15,10 @@ class MessageParser {
         this.textController = textController
     }
 
+    fun onWebsocketOpen() {
+        cameraController?.loadNewImageFromCurrentCamera()            
+    }
+
     fun parseMessage(message: String) {
         if (cameraController == null || textController == null) {
             Log.e(TAG, "Controllers are not initialized yet. Call setupControllers() first.")
