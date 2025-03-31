@@ -5,7 +5,7 @@ import com.wiconic.domoticzapp.ui.controller.GeofenceController
 class GeofenceModel(
     private val geofenceCenterLat: Double,
     private val geofenceCenterLon: Double,
-    private val geofenceRadius: Float,
+    private val geofenceRadius: Int,
     private val measurementsBeforeTrigger: Int,
     private val controller: GeofenceController  // Controller passed directly
 ) {

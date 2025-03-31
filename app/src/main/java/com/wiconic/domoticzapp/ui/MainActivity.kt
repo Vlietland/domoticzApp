@@ -42,39 +42,41 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appPreferenceManager: AppPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+       super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
 
         appPreferenceManager = AppPreferenceManager(this)
 
-        cameraImageView = findViewById<ImageView>(R.id.cameraImageView)
-        swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipeRefreshLayout)
-        cameraController = CameraController(this, cameraImageView, swipeRefreshLayout, domoticzAppServerConnection)
+        cameraImageView = findViewById(R.id.cameraImageView)
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout)
+        messagesTextView = findViewById(R.id.messages)
+        openGateButton = findViewById(R.id.button_open_gate)
 
-        messagesTextView = findViewById<TextView>(R.id.messages)
-        textController = TextController(messagesTextView)
-
-        messageParser = MessageParser(cameraController, textController)
+        messageParser = MessageParser()
         domoticzAppServerConnection = DomoticzAppServerConnection(messageParser)
 
-        openGateButton = findViewById<Button>(R.id.button_open_gate)
-        gateController = GateController(domoticzAppServerConnection, openGateButton)
+        cameraController = CameraController(this, cameraImageView, swipeRefreshLayout, domoticzAppServerConnection)
         swipeGestureController = SwipeGestureController(this, cameraController)
+        textController = TextController(messagesTextView)
 
-        lifecycleScope.launch(Dispatchers.IO) { domoticzAppServerConnection.connect(appPreferenceManager.getWebSocketUrl()) }
-
+        gateController = GateController(domoticzAppServerConnection, openGateButton)
         geofenceController = GeofenceController(this, appPreferenceManager, gateController)
+
+        messageParser.setupControllers(cameraController, textController)
+
+        lifecycleScope.launch(Dispatchers.IO) { 
+            domoticzAppServerConnection.connect(appPreferenceManager.getWebSocketUrl())
+        }
+
         geofenceController.initializeGeofence()
-
         if (appPreferenceManager.getGeofenceEnabled()) geofenceController.startMonitoring()
-
+        
         preferenceObserver = PreferenceObserver(this, appPreferenceManager, geofenceController, domoticzAppServerConnection)
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferenceObserver)
 
         swipeRefreshLayout.setOnRefreshListener { cameraController.loadCameraImage() }
-
-        findViewById<Button>(R.id.button_open_gate).setOnClickListener { gateController.openGate() }
+        openGateButton.setOnClickListener { gateController.openGate() }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

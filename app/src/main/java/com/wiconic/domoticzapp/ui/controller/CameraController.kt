@@ -1,6 +1,8 @@
 package com.wiconic.domoticzapp.ui.controller
 
 import android.content.Context
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -56,6 +58,20 @@ class CameraController(
     private fun displayImage(imageData: String) {
         swipeRefreshLayout.isRefreshing = false
         Log.d(TAG, "Image displayed successfully.")
+
+        try {
+            Log.d(TAG, "Image data size: ${imageData.length}")
+            val decodedBytes = Base64.decode(imageData, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+            if (bitmap != null) {
+                cameraImageView.setImageBitmap(bitmap)
+                Log.d(TAG, "Bitmap successfully displayed.")
+            } else {
+                Log.e(TAG, "Failed to decode bitmap.")
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to decode image: ${e.message}")
+        }
     }
 
     companion object {

@@ -37,12 +37,19 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         private fun setupPreference(key: String, defaultValue: String) {
-            findPreference<EditTextPreference>(key)?.apply {
-                if (text.isNullOrEmpty()) text = defaultValue
-                summary = text
-                setOnPreferenceChangeListener { _, newValue ->
-                    text = newValue.toString()
-                    summary = newValue.toString()
+            val preference = findPreference<androidx.preference.Preference>(key)
+            
+            if (preference is EditTextPreference) {
+                if (preference.text.isNullOrEmpty()) preference.text = defaultValue
+                preference.summary = preference.text
+                preference.setOnPreferenceChangeListener { _, newValue ->
+                    preference.text = newValue.toString()
+                    preference.summary = newValue.toString()
+                    true
+                }
+            } else if (preference is androidx.preference.SeekBarPreference) {
+                preference.setOnPreferenceChangeListener { _, newValue ->
+                    preference.summary = newValue.toString()
                     true
                 }
             }

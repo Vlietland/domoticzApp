@@ -46,11 +46,14 @@
             android:inputType="numberDecimal|numberSigned"
             app:iconSpaceReserved="false" />
 
-        <EditTextPreference
+        <SeekBarPreference
             android:key="geofence_radius"
             android:title="@string/geofence_radius_title"
             android:summary="@string/geofence_radius_summary"
-            android:inputType="number"
+            android:inputType="number"            
+            app:min="10"
+            android:defaultValue="100"
+            android:max="500"
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
