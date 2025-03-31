@@ -58,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 
         cameraController = CameraController(this, cameraImageView, swipeRefreshLayout, domoticzAppServerConnection)
         swipeGestureController = SwipeGestureController(this, cameraController)
+        cameraImageView.setOnTouchListener(swipeGestureController)
         textController = TextController(messagesTextView)
 
         gateController = GateController(domoticzAppServerConnection, openGateButton)

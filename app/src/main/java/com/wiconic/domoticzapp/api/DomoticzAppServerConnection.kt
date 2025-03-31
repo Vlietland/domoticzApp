@@ -33,7 +33,7 @@ class DomoticzAppServerConnection(private val messageParser: MessageParser) {
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            Log.d(TAG, "Message received: $text")
+            //Log.d(TAG, "Message received: $text")
             CoroutineScope(Dispatchers.Main).launch {
                 messageParser.parseMessage(text)
             }

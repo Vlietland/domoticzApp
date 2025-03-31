@@ -25,10 +25,10 @@ class MessageParser {
             val json = JSONObject(message)
             val messageType = json.optString("type")
 
-            if (messageType == "notification") {
-                handleNotification(json)
-            } else {
-                Log.w(TAG, "Unknown message type: $messageType")
+            when (messageType) {
+                "notification" -> handleNotification(json)
+                "cameraImage" -> handleCameraImage(json)
+                else -> Log.w(TAG, "Unknown message type: $messageType")
             }
         } catch (e: Exception) {
             Log.e(TAG, "Error parsing message: ${e.message}")
@@ -38,13 +38,25 @@ class MessageParser {
     private fun handleNotification(json: JSONObject) {
         val messageText = json.optString("message", "Unknown notification")
         val imageData = json.optString("imageData", "")
-        if (textController != null) {
-            textController!!.addMessage(messageText)
-            Log.i(TAG, "Text notification received: $messageText")
-        }
-        if (imageData.isNotEmpty() && cameraController != null) {
-            cameraController!!.handleIncomingImage(imageData)
+
+        textController?.addMessage(messageText)
+        Log.i(TAG, "Text notification received: $messageText")
+
+        if (imageData.isNotEmpty()) {
+            cameraController?.handleIncomingImage(imageData)
             Log.i(TAG, "Image notification received with message: $messageText")
+        }
+    }
+
+    private fun handleCameraImage(json: JSONObject) {
+        val cameraId = json.optString("cameraId")
+        val imageData = json.optString("imageData", "")
+
+        if (imageData.isNotEmpty()) {
+            cameraController?.handleIncomingImage(imageData)
+            Log.i(TAG, "Image from camera $cameraId received successfully.")
+        } else {
+            Log.w(TAG, "Empty image data received for camera $cameraId")
         }
     }
 
