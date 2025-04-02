@@ -44,19 +44,22 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
 
         mainModelView = ViewModelProvider(this)[MainModelView::class.java]
-
+        openGateButton = findViewById(R.id.button_open_gate)
         cameraImageView = findViewById(R.id.cameraImageView)
         messagesTextView = findViewById(R.id.messages)
-        openGateButton = findViewById(R.id.button_open_gate)
-        notificationCardView = findViewById(R.id.notification_card)
-
         mainModelView.initializeComponents(this, cameraImageView, messagesTextView, openGateButton)
+
+        notificationCardView = findViewById(R.id.notification_card)
+        mainModelView.getTextController().updateTextView(messagesTextView)
         messagesTextView.text = mainModelView.getTextController().getMessages()
+
+        mainModelView.getCameraController().updateImageView(cameraImageView)
 
         cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
         cameraImageView.setOnTouchListener(cameraSwipeController)
-        notificationSwipeController = NotificationSwipeController(this, notificationCardView, messagesTextView, mainModelView.getTextController())
-        notificationCardView?.setOnTouchListener(notificationSwipeController)
+
+        notificationSwipeController = NotificationSwipeController(this, notificationCardView, mainModelView.getTextController())
+        notificationCardView.setOnTouchListener(notificationSwipeController)
 
         preferenceObserver = PreferenceObserver(
             this,

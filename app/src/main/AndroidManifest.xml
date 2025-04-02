@@ -37,12 +37,5 @@
             android:label="@string/settings_title"
             android:theme="@style/Theme.DomoticzApp"
             android:parentActivityName=".ui.MainActivity" />
-        
-        <!-- WebSocket Service -->
-        <service
-            android:name=".api.DomoticzWebSocketService"
-            android:exported="false" />
-        
     </application>
-
 </manifest>

@@ -5,7 +5,6 @@ import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
-import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.GestureDetectorCompat
 import kotlin.math.abs
@@ -14,7 +13,6 @@ import com.wiconic.domoticzapp.ui.controller.TextController
 class NotificationSwipeController(
     private val context: Context,
     private val notificationCard: CardView,
-    private val messagesTextView: TextView,
     private val textController: TextController
 ) : View.OnTouchListener {
 
@@ -50,14 +48,9 @@ class NotificationSwipeController(
             return true
         }
 
-        override fun onFling(
-            e1: MotionEvent?,
-            e2: MotionEvent,
-            velocityX: Float,
-            velocityY: Float
-        ): Boolean {
-            if (e1 == null || e2 == null) return false
-            
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
+            if (e1 == null) return false
+           
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastActionTime < MIN_ACTION_INTERVAL) {
                 Log.d(TAG, "filtered: $currentTime : $lastActionTime")

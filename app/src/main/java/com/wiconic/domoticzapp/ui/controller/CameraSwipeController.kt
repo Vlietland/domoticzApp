@@ -46,7 +46,7 @@ class CameraSwipeController(
         }
 
         override fun onScroll(e1: MotionEvent?, e2: MotionEvent, velocityX: Float, velocityY: Float): Boolean {
-            if (e1 == null || e2 == null) return false
+            if (e1 == null) return false
 
             // Check if the scroll started on the cameraImageView
             val location = IntArray(2)

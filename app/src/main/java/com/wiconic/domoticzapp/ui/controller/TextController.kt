@@ -5,15 +5,33 @@ import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale  
+import com.wiconic.domoticzapp.BuildConfig
 
-class TextController(private val messagesTextView: TextView) : ViewModel() {
+class TextController(private var messagesTextView: TextView) : ViewModel() {
     private val _messages = MutableLiveData<List<String>>(emptyList())
     val messages: LiveData<List<String>> = _messages
     private var storedMessages: MutableList<String> = mutableListOf()    
 
+    private val deviceToMessageMap = mapOf(
+        BuildConfig.DEVICE_1 to BuildConfig.DEVICE_1_MESSAGE,
+        BuildConfig.DEVICE_2 to BuildConfig.DEVICE_2_MESSAGE,
+        BuildConfig.DEVICE_3 to BuildConfig.DEVICE_3_MESSAGE,
+        BuildConfig.DEVICE_4 to BuildConfig.DEVICE_4_MESSAGE,
+        BuildConfig.DEVICE_5 to BuildConfig.DEVICE_5_MESSAGE,
+        BuildConfig.DEVICE_6 to BuildConfig.DEVICE_6_MESSAGE
+    )
+    val device6 = BuildConfig.DEVICE_6
+
     init {
         _messages.value = storedMessages
         updateTextView()
+    }
+
+    fun updateTextView(newTextView: TextView) {
+        messagesTextView = newTextView
     }
 
     fun clearMessages() {
@@ -27,13 +45,18 @@ class TextController(private val messagesTextView: TextView) : ViewModel() {
         return storedMessages.joinToString("\n")
     }
 
-    fun addMessage(message: String) {
-        val currentMessages = _messages.value?.toMutableList() ?: mutableListOf()
-        currentMessages.add(message)
-        _messages.value = currentMessages.toList()
-        
-        messagesTextView.text = currentMessages.joinToString("\n")
-        Log.i(TAG, "Message added: $message")
+    fun addMessage(deviceName: String) {
+        val message = deviceToMessageMap[deviceName]
+        if (message != null) {
+            val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
+            val formattedMessage = "[$timestamp] $message"
+            storedMessages.add(formattedMessage)
+            _messages.value = storedMessages.toList()
+            updateTextView()
+            Log.i(TAG, "Message added for device: $deviceName - $formattedMessage")
+        } else {
+            Log.w(TAG, "Unknown device name: $deviceName")
+        }
     }
 
     private fun updateTextView() {
@@ -42,5 +65,5 @@ class TextController(private val messagesTextView: TextView) : ViewModel() {
 
     companion object {
         private const val TAG = "TextController"
-    }
+    }    
 }

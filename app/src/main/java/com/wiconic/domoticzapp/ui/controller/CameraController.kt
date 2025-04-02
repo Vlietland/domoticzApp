@@ -5,47 +5,45 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
+import com.wiconic.domoticzapp.BuildConfig
 import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 
 class CameraController(
-    val context: Context,
-    private val cameraImageView: ImageView,
-    private val serverConnection: DomoticzAppServerConnection
-) {
-
-    private var currentCameraIndex = 0
-    private val cameraIds = listOf(
-        "Garage", "Pantry", "FrontdoorEntry", "Frontdoor",
-        "GardenSouth", "TerraceLiving", "GardenWest", "Backdoor"
-    )
+    private val context: Context,
+    private var cameraImageView: ImageView,
+    private val domoticzAppServerConnection: DomoticzAppServerConnection) {
+    fun updateImageView(newImageView: ImageView) {
+        cameraImageView = newImageView
+    }
+    private var currentCameraIndex = 1
+    private var maxCameras = BuildConfig.MAX_CAMERAS
 
     init {
-        Log.d(TAG, "CameraController initialized with ${cameraIds.size} cameras.")
+        Log.d(TAG, "CameraController initialized with ${maxCameras} cameras.")
     }
 
     fun loadNextImage() {
-        currentCameraIndex = if (currentCameraIndex < cameraIds.size - 1) currentCameraIndex + 1 else 0
-        Log.d(TAG, "Swiping to next image. Current camera index: $currentCameraIndex, Camera ID: ${cameraIds[currentCameraIndex]}")
+        currentCameraIndex = if (currentCameraIndex < maxCameras - 1) currentCameraIndex + 1 else 1
+        Log.d(TAG, "Swiping to next image. Current camera index: $currentCameraIndex, Camera ID: ${currentCameraIndex}")
         loadCameraImage()
     }
 
     fun loadPreviousImage() {
-        currentCameraIndex = if (currentCameraIndex > 0) currentCameraIndex - 1 else cameraIds.size - 1
-        Log.d(TAG, "Swiping to previous image. Current camera index: $currentCameraIndex, Camera ID: ${cameraIds[currentCameraIndex]}")
+        currentCameraIndex = if (currentCameraIndex > 1) currentCameraIndex - 1 else maxCameras - 1
+        Log.d(TAG, "Swiping to previous image. Current camera index: $currentCameraIndex, Camera ID: $(currentCameraIndex}")
         loadCameraImage()
     }
 
     fun loadNewImageFromCurrentCamera() {
-        Log.d(TAG, "Refreshing current camera image. Camera ID: ${cameraIds[currentCameraIndex]}")
+        Log.d(TAG, "Refreshing current camera image. Camera ID: $(currentCameraIndex}")
         loadCameraImage()
     }
 
     fun loadCameraImage() {
-        val cameraId = cameraIds[currentCameraIndex]
-        val message = "{\"type\": \"getCameraImage\", \"cameraId\": \"$cameraId\"}"
+        val message = "{\"type\": \"getCameraImage\", \"cameraId\": \"$currentCameraIndex\"}"
         
-        Log.d(TAG, "Requesting camera image for Camera ID: $cameraId with message: $message")
-        serverConnection.sendMessage(message)
+        Log.d(TAG, "Requesting camera image for Camera ID: $currentCameraIndex with message: $message")
+        domoticzAppServerConnection.sendMessage(message)
         
         displayImageLoading()
     }
