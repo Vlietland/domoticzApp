@@ -42,6 +42,7 @@ class MessageParser {
     private fun handleNotification(json: JSONObject) {
         val messageText = json.optString("message", "Unknown notification")
         val imageData = json.optString("imageData", "")
+        Log.d(TAG, "Received image data. Length: ${imageData.length}")        
 
         textController?.addMessage(messageText)
         Log.i(TAG, "Text notification received: $messageText")

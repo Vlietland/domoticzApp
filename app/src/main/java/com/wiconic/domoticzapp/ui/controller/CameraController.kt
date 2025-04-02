@@ -15,8 +15,8 @@ class CameraController(
 
     private var currentCameraIndex = 0
     private val cameraIds = listOf(
-        "garage", "pantry", "frontdoorentry", "frontdoor",
-        "gardensouth", "terraceliving", "gardenwest", "backdoor"
+        "Garage", "Pantry", "FrontdoorEntry", "Frontdoor",
+        "GardenSouth", "TerraceLiving", "GardenWest", "Backdoor"
     )
 
     init {
