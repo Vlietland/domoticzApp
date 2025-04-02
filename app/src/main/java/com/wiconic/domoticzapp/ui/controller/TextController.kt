@@ -5,17 +5,27 @@ import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class TextController(
-    private val messagesTextView: TextView
-) : ViewModel() {
-
+class TextController(private val messagesTextView: TextView) : ViewModel() {
     private val _messages = MutableLiveData<List<String>>(emptyList())
     val messages: LiveData<List<String>> = _messages
+    private var storedMessages: MutableList<String> = mutableListOf()    
+
+    init {
+        _messages.value = storedMessages
+        updateTextView()
+    }
+
+    fun clearMessages() {
+        storedMessages.clear()
+        _messages.value = storedMessages.toList()
+        updateTextView()
+        Log.i(TAG, "All messages cleared")
+    }
+
+    fun getMessages(): String {
+        return storedMessages.joinToString("\n")
+    }
 
     fun addMessage(message: String) {
         val currentMessages = _messages.value?.toMutableList() ?: mutableListOf()
@@ -24,6 +34,10 @@ class TextController(
         
         messagesTextView.text = currentMessages.joinToString("\n")
         Log.i(TAG, "Message added: $message")
+    }
+
+    private fun updateTextView() {
+        messagesTextView.text = getMessages()
     }
 
     companion object {

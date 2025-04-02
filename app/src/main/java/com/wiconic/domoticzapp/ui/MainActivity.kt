@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.wiconic.domoticzapp.R
@@ -28,62 +29,47 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-
-    private lateinit var cameraController: CameraController
+    private lateinit var mainModelView: MainModelView
     private lateinit var cameraSwipeController: CameraSwipeController
-    private lateinit var textController: TextController
+    private lateinit var notificationSwipeController: NotificationSwipeController
     private lateinit var messagesTextView: TextView
     private lateinit var cameraImageView: ImageView
     private lateinit var notificationCardView: CardView
-    private lateinit var geofenceController: GeofenceController
-    private lateinit var notificationSwipeController: NotificationSwipeController
-    private lateinit var gateController: GateController
     private lateinit var openGateButton: Button
-    private lateinit var messageParser: MessageParser
-    private lateinit var domoticzAppServerConnection: DomoticzAppServerConnection
     private lateinit var preferenceObserver: PreferenceObserver
-    private lateinit var appPreferenceManager: AppPreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
 
-        appPreferenceManager = AppPreferenceManager(this)
+        mainModelView = ViewModelProvider(this)[MainModelView::class.java]
 
         cameraImageView = findViewById(R.id.cameraImageView)
         messagesTextView = findViewById(R.id.messages)
         openGateButton = findViewById(R.id.button_open_gate)
         notificationCardView = findViewById(R.id.notification_card)
 
-        messageParser = MessageParser()
-        domoticzAppServerConnection = DomoticzAppServerConnection(messageParser)
+        mainModelView.initializeComponents(this, cameraImageView, messagesTextView, openGateButton)
+        messagesTextView.text = mainModelView.getTextController().getMessages()
 
-        cameraController = CameraController(this, cameraImageView, domoticzAppServerConnection)
-        cameraSwipeController = CameraSwipeController(this, cameraController, cameraImageView)
+        cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
         cameraImageView.setOnTouchListener(cameraSwipeController)
-        textController = TextController(messagesTextView)
-        notificationSwipeController = NotificationSwipeController(this, notificationCardView, messagesTextView)
+        notificationSwipeController = NotificationSwipeController(this, notificationCardView, messagesTextView, mainModelView.getTextController())
         notificationCardView?.setOnTouchListener(notificationSwipeController)
 
-        gateController = GateController(domoticzAppServerConnection, openGateButton)
-        geofenceController = GeofenceController(this, appPreferenceManager, gateController)
+        preferenceObserver = PreferenceObserver(
+            this,
+            mainModelView.getAppPreferenceManager(),
+            mainModelView.getGeofenceController(),
+            mainModelView.getDomoticzAppServerConnection()
+        )
 
-        messageParser.setupControllers(cameraController, textController)
-
-        lifecycleScope.launch(Dispatchers.IO) { 
-            domoticzAppServerConnection.connect(appPreferenceManager.getWebSocketUrl())
-        }
-
-        geofenceController.initializeGeofence()
-        if (appPreferenceManager.getGeofenceEnabled()) geofenceController.startMonitoring()
-        
-        preferenceObserver = PreferenceObserver(this, appPreferenceManager, geofenceController, domoticzAppServerConnection)
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferenceObserver)
 
-        openGateButton.setOnClickListener { gateController.openGate() }
+        openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
 
-        cameraController.loadNewImageFromCurrentCamera()
+        mainModelView.getCameraController().loadNewImageFromCurrentCamera()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -103,8 +89,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        geofenceController.stopMonitoring()
-        domoticzAppServerConnection.disconnect()
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferenceObserver)
     }
 }

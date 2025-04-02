@@ -9,11 +9,13 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.core.view.GestureDetectorCompat
 import kotlin.math.abs
+import com.wiconic.domoticzapp.ui.controller.TextController
 
 class NotificationSwipeController(
     private val context: Context,
     private val notificationCard: CardView,
-    private val messagesTextView: TextView
+    private val messagesTextView: TextView,
+    private val textController: TextController
 ) : View.OnTouchListener {
 
     private val gestureDetector = GestureDetectorCompat(context, GestureListener())
@@ -65,7 +67,7 @@ class NotificationSwipeController(
             val diffY = e2.y - e1.y
             if (abs(diffY) > SWIPE_THRESHOLD && abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                 if (diffY < 0) { // Swipe up
-                    messagesTextView.text = ""
+                    textController.clearMessages()
                     lastActionTime = currentTime
                     Log.d(TAG, "Cleared messages on swipe up")
                     return true
