@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         cameraImageView.setOnTouchListener(cameraSwipeController)
         textController = TextController(messagesTextView)
         notificationSwipeController = NotificationSwipeController(this, notificationCardView, messagesTextView)
-        notificationCardView.setOnTouchListener(notificationSwipeController)
+        notificationCardView?.setOnTouchListener(notificationSwipeController)
 
         gateController = GateController(domoticzAppServerConnection, openGateButton)
         geofenceController = GeofenceController(this, appPreferenceManager, gateController)

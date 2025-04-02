@@ -37,7 +37,7 @@
         android:background="?attr/colorPrimary"
         app:cardCornerRadius="8dp"
         app:cardElevation="16dp"
-        android:layout_marginTop="24dp"        
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp"
         app:layout_constraintBottom_toTopOf="@id/button_open_gate"
         app:layout_constraintEnd_toEndOf="@id/button_open_gate"
@@ -55,9 +55,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:background="#6200EE"
+                android:background="@color/colorPrimaryDark"
                 android:text="Notification Log"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/textPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -69,7 +69,7 @@
                 android:padding="12dp"
                 android:text="No notifications yet."
                 android:textSize="16sp"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/textPrimary"
                 android:textStyle="bold"/>
         </LinearLayout>
 
@@ -82,8 +82,8 @@
         android:layout_margin="16dp"
         android:text="Open Gate"
         android:textSize="18sp"
-        android:backgroundTint="#6200EE"
-        android:textColor="#FFFFFF"
+        android:backgroundTint="@color/colorPrimaryDark"
+        android:textColor="@color/textPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
