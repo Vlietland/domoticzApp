@@ -25,7 +25,6 @@ android {
     buildConfigField("String", "DEVICE_3", "\"${project.findProperty("DEVICE_3") ?: "FireAlarm"}\"")
     buildConfigField("String", "DEVICE_4", "\"${project.findProperty("DEVICE_4") ?: "LeakDetection"}\"")
     buildConfigField("String", "DEVICE_5", "\"${project.findProperty("DEVICE_5") ?: "IntrusionAlarm"}\"")
-    buildConfigField("String", "DEVICE_6", "\"${project.findProperty("DEVICE_6") ?: "GateState"}\"")
 
     // Messages
     buildConfigField("String", "DEVICE_1_MESSAGE", "\"${project.findProperty("DEVICE_1_MESSAGE") ?: "GATE Bell has been pressed. Who is at the gate?"}\"")
@@ -33,7 +32,6 @@ android {
     buildConfigField("String", "DEVICE_3_MESSAGE", "\"${project.findProperty("DEVICE_3_MESSAGE") ?: "The FIRE alarm has detected FIRE and/or SMOKE !!!"}\"")
     buildConfigField("String", "DEVICE_4_MESSAGE", "\"${project.findProperty("DEVICE_4_MESSAGE") ?: "The WATER detector in the Business Entry has detected water leakage !!!"}\"")
     buildConfigField("String", "DEVICE_5_MESSAGE", "\"${project.findProperty("DEVICE_5_MESSAGE") ?: "The INTRUSION alarm has detected a tripped sensor, which set off the alarm !!!"}\"")
-    buildConfigField("String", "DEVICE_6_MESSAGE", "\"${project.findProperty("DEVICE_6_MESSAGE") ?: "The gate state has changed."}\"")
 
     // Max Cameras
     buildConfigField("int", "MAX_CAMERAS", "${project.findProperty("MAX_CAMERAS") ?: 8}")

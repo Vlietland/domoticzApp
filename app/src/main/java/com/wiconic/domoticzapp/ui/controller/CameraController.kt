@@ -12,24 +12,26 @@ class CameraController(
     private val context: Context,
     private var cameraImageView: ImageView,
     private val domoticzAppServerConnection: DomoticzAppServerConnection) {
-    fun updateImageView(newImageView: ImageView) {
-        cameraImageView = newImageView
-    }
     private var currentCameraIndex = 1
     private var maxCameras = BuildConfig.MAX_CAMERAS
+    private var TAG = "CameraController"
 
     init {
         Log.d(TAG, "CameraController initialized with ${maxCameras} cameras.")
     }
 
+    fun setImageView(newImageView: ImageView) {
+        cameraImageView = newImageView
+    }
+
     fun loadNextImage() {
-        currentCameraIndex = if (currentCameraIndex < maxCameras - 1) currentCameraIndex + 1 else 1
+        currentCameraIndex = if (currentCameraIndex < maxCameras) currentCameraIndex + 1 else 1
         Log.d(TAG, "Swiping to next image. Current camera index: $currentCameraIndex, Camera ID: ${currentCameraIndex}")
         loadCameraImage()
     }
 
     fun loadPreviousImage() {
-        currentCameraIndex = if (currentCameraIndex > 1) currentCameraIndex - 1 else maxCameras - 1
+        currentCameraIndex = if (currentCameraIndex > 1) currentCameraIndex - 1 else maxCameras
         Log.d(TAG, "Swiping to previous image. Current camera index: $currentCameraIndex, Camera ID: $(currentCameraIndex}")
         loadCameraImage()
     }
@@ -39,12 +41,20 @@ class CameraController(
         loadCameraImage()
     }
 
+    fun setCurrentCamera(deviceName: String) {
+        if (deviceName == BuildConfig.DEVICE_1) {
+            currentCameraIndex = 1
+            loadCameraImage()
+        } else if (deviceName == BuildConfig.DEVICE_2) {
+            currentCameraIndex = 4
+            loadCameraImage()
+        }
+    }
+
     fun loadCameraImage() {
         val message = "{\"type\": \"getCameraImage\", \"cameraId\": \"$currentCameraIndex\"}"
-        
         Log.d(TAG, "Requesting camera image for Camera ID: $currentCameraIndex with message: $message")
         domoticzAppServerConnection.sendMessage(message)
-        
         displayImageLoading()
     }
 
@@ -74,9 +84,5 @@ class CameraController(
         } catch (e: Exception) {
             Log.e(TAG, "Failed to decode image: ${e.message}")
         }
-    }
-
-    companion object {
-        private const val TAG = "CameraController"
     }
 }

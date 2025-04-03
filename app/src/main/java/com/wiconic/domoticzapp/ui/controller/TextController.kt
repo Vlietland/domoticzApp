@@ -21,12 +21,15 @@ class TextController(private var messagesTextView: TextView) : ViewModel() {
         BuildConfig.DEVICE_3 to BuildConfig.DEVICE_3_MESSAGE,
         BuildConfig.DEVICE_4 to BuildConfig.DEVICE_4_MESSAGE,
         BuildConfig.DEVICE_5 to BuildConfig.DEVICE_5_MESSAGE,
-        BuildConfig.DEVICE_6 to BuildConfig.DEVICE_6_MESSAGE
     )
-    val device6 = BuildConfig.DEVICE_6
 
     init {
         _messages.value = storedMessages
+        Log.i(TAG, "testiTESTESTSTEng ${BuildConfig.DEVICE_1_MESSAGE}")
+        Log.i(TAG, "testiTESTESTSTEng ${BuildConfig.DEVICE_2_MESSAGE}")
+        Log.i(TAG, "testiTESTESTSTEng ${BuildConfig.DEVICE_3_MESSAGE}")
+        Log.i(TAG, "testiTESTESTSTEng ${BuildConfig.DEVICE_4_MESSAGE}")
+        Log.i(TAG, "testiTESTESTSTEng ${BuildConfig.DEVICE_5_MESSAGE}")
         updateTextView()
     }
 

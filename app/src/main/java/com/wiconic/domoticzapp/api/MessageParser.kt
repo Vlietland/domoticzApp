@@ -9,6 +9,7 @@ class MessageParser {
 
     private var cameraController: CameraController? = null
     private var textController: TextController? = null
+    private var TAG = "MessageParser"    
 
     fun setupControllers(cameraController: CameraController?, textController: TextController?) {
         this.cameraController = cameraController
@@ -40,17 +41,12 @@ class MessageParser {
     }
 
     private fun handleNotification(json: JSONObject) {
-        val messageText = json.optString("message", "Unknown notification")
-        val imageData = json.optString("imageData", "")
-        Log.d(TAG, "Received image data. Length: ${imageData.length}")        
+        val deviceName = json.optString("deviceName", "Unknown notification")
+        Log.i(TAG, "Notification received with message: $deviceName")        
 
-        textController?.addMessage(messageText)
-        Log.i(TAG, "Text notification received: $messageText")
-
-        if (imageData.isNotEmpty()) {
-            cameraController?.handleIncomingImage(imageData)
-            Log.i(TAG, "Image notification received with message: $messageText")
-        }
+        textController?.addMessage(deviceName)      
+        cameraController?.setCurrentCamera(deviceName)
+        Log.i(TAG, "Device notification received: $deviceName")
     }
 
     private fun handleCameraImage(json: JSONObject) {
@@ -63,9 +59,5 @@ class MessageParser {
         } else {
             Log.w(TAG, "Empty image data received for camera $cameraId")
         }
-    }
-
-    companion object {
-        private const val TAG = "MessageParser"
     }
 }

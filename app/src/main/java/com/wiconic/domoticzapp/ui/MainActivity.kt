@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
         mainModelView.getTextController().updateTextView(messagesTextView)
         messagesTextView.text = mainModelView.getTextController().getMessages()
 
-        mainModelView.getCameraController().updateImageView(cameraImageView)
+        mainModelView.getCameraController().setImageView(cameraImageView)
 
         cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
         cameraImageView.setOnTouchListener(cameraSwipeController)

@@ -6,11 +6,10 @@ import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
 
 class GateController(
     private val domoticzAppServerConnection: DomoticzAppServerConnection,
-    private val openGateButton: Button // Injected button
+    private val openGateButton: Button
 ) {
 
     init {
-        // Setting up click listener within the GateController
         openGateButton.setOnClickListener { openGate() }
     }
 
