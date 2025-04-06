@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.preference.EditTextPreference
 import androidx.preference.PreferenceFragmentCompat
 import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.settings.AppPreferenceManager
+import com.wiconic.domoticzapp.model.AppPreferences
 
 class SettingsActivity : AppCompatActivity() {
 
@@ -21,24 +21,24 @@ class SettingsActivity : AppCompatActivity() {
 
     class SettingsFragment : PreferenceFragmentCompat() {
 
-        private lateinit var appPreferenceManager: AppPreferenceManager
+        private lateinit var appPreferences: AppPreferences
 
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             setPreferencesFromResource(R.xml.preferences, rootKey)
-            appPreferenceManager = AppPreferenceManager(requireContext())
+            appPreferences = AppPreferences(requireContext())
 
-            setupPreference("server_ip", appPreferenceManager.getServerIpAddress())
-            setupPreference("server_port", appPreferenceManager.getServerPort().toString())
-            setupPreference("geofence_lat", appPreferenceManager.getGeofenceCenterLat().toString())
-            setupPreference("geofence_lon", appPreferenceManager.getGeofenceCenterLon().toString())
-            setupPreference("geofence_radius", appPreferenceManager.getGeofenceRadius().toString())
-            setupPreference("polling_frequency", appPreferenceManager.getPollingFrequency().toString())
-            setupPreference("measurements_before_trigger", appPreferenceManager.getMeasurementsBeforeTrigger().toString())
+            setupPreference("server_ip", appPreferences.getServerIpAddress())
+            setupPreference("server_port", appPreferences.getServerPort().toString())
+            setupPreference("geofence_lat", appPreferences.getGeofenceCenterLat().toString())
+            setupPreference("geofence_lon", appPreferences.getGeofenceCenterLon().toString())
+            setupPreference("geofence_radius", appPreferences.getGeofenceRadius().toString())
+            setupPreference("polling_frequency", appPreferences.getPollingFrequency().toString())
+            setupPreference("measurements_before_trigger", appPreferences.getMeasurementsBeforeTrigger().toString())
         }
 
         private fun setupPreference(key: String, defaultValue: String) {
             val preference = findPreference<androidx.preference.Preference>(key)
-            
+
             if (preference is EditTextPreference) {
                 if (preference.text.isNullOrEmpty()) preference.text = defaultValue
                 preference.summary = preference.text

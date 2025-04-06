@@ -1,4 +1,4 @@
-package com.wiconic.domoticzapp.ui.controller
+package com.wiconic.domoticzapp.controller
 
 import android.content.Context
 import android.util.Log
@@ -8,15 +8,14 @@ import android.view.View
 import androidx.cardview.widget.CardView
 import androidx.core.view.GestureDetectorCompat
 import kotlin.math.abs
-import com.wiconic.domoticzapp.ui.controller.TextController
 
-class NotificationSwipeController(
+class AlertSwipeController(
     private val context: Context,
     private val notificationCard: CardView,
-    private val textController: TextController
-) : View.OnTouchListener {
+    private val purgeAlerts: () -> Unit) : View.OnTouchListener{
 
     private val gestureDetector = GestureDetectorCompat(context, GestureListener())
+    private val TAG = "NotificationSwipeController"
 
     override fun onTouch(v: View?, event: MotionEvent): Boolean {
         if (v == null) return false
@@ -60,7 +59,7 @@ class NotificationSwipeController(
             val diffY = e2.y - e1.y
             if (abs(diffY) > SWIPE_THRESHOLD && abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
                 if (diffY < 0) { // Swipe up
-                    textController.clearMessages()
+                    purgeAlerts()
                     lastActionTime = currentTime
                     Log.d(TAG, "Cleared messages on swipe up")
                     return true
@@ -68,9 +67,5 @@ class NotificationSwipeController(
             }
             return false
         }
-    }
-
-    companion object {
-        private const val TAG = "NotificationSwipeController"
     }
 }

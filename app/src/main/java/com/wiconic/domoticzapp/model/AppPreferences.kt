@@ -1,9 +1,9 @@
-package com.wiconic.domoticzapp.settings
+package com.wiconic.domoticzapp.model
 
 import android.content.Context
 import androidx.preference.PreferenceManager
 
-class AppPreferenceManager(private val context: Context) {
+class AppPreferences(private val context: Context) {
 
     private val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 

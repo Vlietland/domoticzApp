@@ -14,16 +14,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.api.DomoticzAppServerConnection
-import com.wiconic.domoticzapp.api.MessageParser
-import com.wiconic.domoticzapp.settings.AppPreferenceManager
-import com.wiconic.domoticzapp.ui.controller.CameraController
-import com.wiconic.domoticzapp.ui.controller.GateController
-import com.wiconic.domoticzapp.ui.controller.CameraSwipeController
-import com.wiconic.domoticzapp.ui.controller.NotificationSwipeController
-import com.wiconic.domoticzapp.ui.controller.TextController
-import com.wiconic.domoticzapp.ui.controller.GeofenceController
-import com.wiconic.domoticzapp.ui.observer.PreferenceObserver
+import com.wiconic.domoticzapp.connectivity.AppServerConnector
+import com.wiconic.domoticzapp.controller.MessageHandler
+import com.wiconic.domoticzapp.controller.CameraController
+import com.wiconic.domoticzapp.controller.GateController
+import com.wiconic.domoticzapp.controller.CameraSwipeController
+import com.wiconic.domoticzapp.controller.AlertSwipeController
+import com.wiconic.domoticzapp.controller.AlertController
+import com.wiconic.domoticzapp.controller.GeofenceController
+import com.wiconic.domoticzapp.model.AppPreferences
 import com.wiconic.domoticzapp.ui.SettingsActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,12 +30,11 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private lateinit var mainModelView: MainModelView
     private lateinit var cameraSwipeController: CameraSwipeController
-    private lateinit var notificationSwipeController: NotificationSwipeController
-    private lateinit var messagesTextView: TextView
+    private lateinit var alertSwipeController: AlertSwipeController
+    private lateinit var alertTextView: TextView
     private lateinit var cameraImageView: ImageView
     private lateinit var notificationCardView: CardView
     private lateinit var openGateButton: Button
-    private lateinit var preferenceObserver: PreferenceObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,29 +44,21 @@ class MainActivity : AppCompatActivity() {
         mainModelView = ViewModelProvider(this)[MainModelView::class.java]
         openGateButton = findViewById(R.id.button_open_gate)
         cameraImageView = findViewById(R.id.cameraImageView)
-        messagesTextView = findViewById(R.id.messages)
-        mainModelView.initializeComponents(this, cameraImageView, messagesTextView, openGateButton)
+        alertTextView = findViewById(R.id.messages)
+        mainModelView.initializeComponents(this, cameraImageView, alertTextView, openGateButton)
 
-        notificationCardView = findViewById(R.id.notification_card)
-        mainModelView.getTextController().updateTextView(messagesTextView)
-        messagesTextView.text = mainModelView.getTextController().getMessages()
+        val alertController = mainModelView.getAlertController()
+        alertController.setOnNewAlertsCallback(this::reloadAlertView)
 
         mainModelView.getCameraController().setImageView(cameraImageView)
 
         cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
         cameraImageView.setOnTouchListener(cameraSwipeController)
 
-        notificationSwipeController = NotificationSwipeController(this, notificationCardView, mainModelView.getTextController())
-        notificationCardView.setOnTouchListener(notificationSwipeController)
+        alertSwipeController = AlertSwipeController(this, notificationCardView, mainModelView.getAlertController()::purgeAlerts)
+        notificationCardView.setOnTouchListener(alertSwipeController)
 
-        preferenceObserver = PreferenceObserver(
-            this,
-            mainModelView.getAppPreferenceManager(),
-            mainModelView.getGeofenceController(),
-            mainModelView.getDomoticzAppServerConnection()
-        )
-
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(preferenceObserver)
+        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
 
         openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
 
@@ -90,8 +80,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun reloadAlertView() {
+        alertTextView.text = mainModelView.getAlertController()
+            .getCachedAlerts()
+            .joinToString(separator = "\n")  // Convert List<String> to a single String
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(preferenceObserver)
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
     }
 }
