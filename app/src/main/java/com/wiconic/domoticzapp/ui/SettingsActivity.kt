@@ -32,7 +32,8 @@ class SettingsActivity : AppCompatActivity() {
             setupPreference("geofence_lat", appPreferences.getGeofenceCenterLat().toString())
             setupPreference("geofence_lon", appPreferences.getGeofenceCenterLon().toString())
             setupPreference("geofence_radius", appPreferences.getGeofenceRadius().toString())
-            setupPreference("polling_frequency", appPreferences.getPollingFrequency().toString())
+            setupPreference("minimum polling_frequency", appPreferences.getMinPollingFrequency().toString())
+            setupPreference("maximum polling_frequency", appPreferences.getMaxPollingFrequency().toString())            
             setupPreference("measurements_before_trigger", appPreferences.getMeasurementsBeforeTrigger().toString())
         }
 
@@ -44,11 +45,6 @@ class SettingsActivity : AppCompatActivity() {
                 preference.summary = preference.text
                 preference.setOnPreferenceChangeListener { _, newValue ->
                     preference.text = newValue.toString()
-                    preference.summary = newValue.toString()
-                    true
-                }
-            } else if (preference is androidx.preference.SeekBarPreference) {
-                preference.setOnPreferenceChangeListener { _, newValue ->
                     preference.summary = newValue.toString()
                     true
                 }

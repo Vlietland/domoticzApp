@@ -1,10 +1,13 @@
-package com.wiconic.domoticzapp.controller
+package com.wiconic.domoticzapp.service
 
 import android.util.Log
 import org.json.JSONObject
 import org.json.JSONArray
+import android.content.Context
+import android.net.Uri
+import android.media.RingtoneManager
 
-class MessageHandler {
+class MessageHandler(private val context: Context) {
     private var onNewAlertsAvailable: (() -> Unit)? = null
     private var onAlerts: ((JSONArray) -> Unit)? = null
     private var onSetCurrentCamera: ((String) -> Unit)? = null
@@ -45,7 +48,10 @@ class MessageHandler {
 
     private fun handleNotification(json: JSONObject) {
         val deviceName = json.optString("deviceName", "Unknown notification")
-        Log.i(TAG, "Notification received with message: $deviceName")        
+        Log.i(TAG, "Notification received with message: $deviceName")     
+        val notificationUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+        val ringtone = RingtoneManager.getRingtone(context, notificationUri)
+        ringtone.play()        
         onNewAlertsAvailable?.invoke()
         onSetCurrentCamera?.invoke(deviceName)
         Log.i(TAG, "Device notification received: $deviceName")

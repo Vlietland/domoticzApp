@@ -14,7 +14,8 @@ class AppPreferences(private val context: Context) {
         const val KEY_GEOFENCE_RADIUS = "geofence_radius"
         const val KEY_GEOFENCE_CENTER_LAT = "geofence_lat"
         const val KEY_GEOFENCE_CENTER_LON = "geofence_lon"
-        const val KEY_POLLING_FREQUENCY = "polling_frequency"
+        const val KEY_MIN_POLLING_FREQUENCY = "minimum_polling_frequency"
+        const val KEY_MAX_POLLING_FREQUENCY = "maximum_polling_frequency"
         const val KEY_MEASUREMENTS = "measurements_before_trigger"
 
         const val DEFAULT_SERVER_IP_ADDRESS = "192.168.0.1"
@@ -22,7 +23,8 @@ class AppPreferences(private val context: Context) {
         const val DEFAULT_GEOFENCE_RADIUS = 100
         const val DEFAULT_CENTER_LAT = 12.379189
         const val DEFAULT_CENTER_LON = 44.899431
-        const val DEFAULT_POLLING_FREQUENCY = 60000L
+        const val DEFAULT_MIN_POLLING_FREQUENCY = 60L       
+        const val DEFAULT_MAX_POLLING_FREQUENCY = 1800L
         const val DEFAULT_MEASUREMENTS_BEFORE_TRIGGER = 3
     }
 
@@ -49,11 +51,13 @@ class AppPreferences(private val context: Context) {
         sharedPreferences.edit().putBoolean(KEY_GEOFENCE_ENABLED, value).apply()
     }
 
-    fun getGeofenceRadius(): Int =
-        sharedPreferences.getInt(KEY_GEOFENCE_RADIUS, DEFAULT_GEOFENCE_RADIUS)
+    fun getGeofenceRadius(): Int {
+        val stringValue = sharedPreferences.getString(KEY_GEOFENCE_RADIUS, DEFAULT_GEOFENCE_RADIUS.toString())
+        return stringValue?.toIntOrNull() ?: DEFAULT_GEOFENCE_RADIUS
+    }
 
     fun setGeofenceRadius(value: Int) {
-        sharedPreferences.edit().putInt(KEY_GEOFENCE_RADIUS, value).apply()
+        sharedPreferences.edit().putString(KEY_GEOFENCE_RADIUS, value.toString()).apply()
     }
 
     fun getGeofenceCenterLat(): Double {
@@ -74,13 +78,22 @@ class AppPreferences(private val context: Context) {
         sharedPreferences.edit().putString(KEY_GEOFENCE_CENTER_LON, value.toString()).apply()
     }
 
-    fun getPollingFrequency(): Long {
-        val stringValue = sharedPreferences.getString(KEY_POLLING_FREQUENCY, DEFAULT_POLLING_FREQUENCY.toString())
-        return stringValue?.toLongOrNull() ?: DEFAULT_POLLING_FREQUENCY
+    fun getMinPollingFrequency(): Long {
+        val stringValue = sharedPreferences.getString(KEY_MIN_POLLING_FREQUENCY, DEFAULT_MIN_POLLING_FREQUENCY.toString())
+        return stringValue?.toLongOrNull() ?: DEFAULT_MIN_POLLING_FREQUENCY
     }
 
-    fun setPollingFrequency(value: Long) {
-        sharedPreferences.edit().putString(KEY_POLLING_FREQUENCY, value.toString()).apply()
+    fun setMinPollingFrequency(value: Long) {
+        sharedPreferences.edit().putString(KEY_MIN_POLLING_FREQUENCY, value.toString()).apply()
+    }
+
+    fun getMaxPollingFrequency(): Long {
+        val stringValue = sharedPreferences.getString(KEY_MAX_POLLING_FREQUENCY, DEFAULT_MAX_POLLING_FREQUENCY.toString())
+        return stringValue?.toLongOrNull() ?: DEFAULT_MAX_POLLING_FREQUENCY
+    }
+
+    fun setMaxPollingFrequency(value: Long) {
+        sharedPreferences.edit().putString(KEY_MAX_POLLING_FREQUENCY, value.toString()).apply()
     }
 
     fun getMeasurementsBeforeTrigger(): Int {

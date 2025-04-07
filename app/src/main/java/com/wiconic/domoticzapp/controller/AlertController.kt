@@ -39,12 +39,12 @@ class AlertController(private val sendMessage: (String) -> Unit) {
                 val formattedTimestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp.toLong() * 1000))
                 val formattedMessage = "[$formattedTimestamp] $alertText"
                 alertCache.add(formattedMessage)
-                updateAlertView()
                 Log.i(TAG, "Messages to the AlertText cache")
             } else {
                 Log.w(TAG, "Unknown device name: $deviceName")
             }
         }
+        updateAlertView()              
     }
 
     fun getAlerts() {

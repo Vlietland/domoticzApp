@@ -33,14 +33,11 @@ class GeofenceController(
         updateGeofenceIcon()
     }
 
-    fun onGeofenceStateChangeCallback(isWithinGeofence: Boolean) {
+    fun onIsWithinGeofenceCallback(inGeofence: Boolean) {
         Log.i(TAG, "Handling geofence state change in the controller.")
-        isCurrentlyWithinGeofence = isWithinGeofence
+        isCurrentlyWithinGeofence = inGeofence
         updateGeofenceIcon()
-        
-        if (isWithinGeofence) {
-            openGate()
-        }
+        if (inGeofence) openGate()
     }
 
     private fun updateGeofenceIcon() {

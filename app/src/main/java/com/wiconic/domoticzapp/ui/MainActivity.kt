@@ -1,7 +1,12 @@
 package com.wiconic.domoticzapp.ui
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
@@ -11,21 +16,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.connectivity.AppServerConnector
-import com.wiconic.domoticzapp.controller.MessageHandler
-import com.wiconic.domoticzapp.controller.CameraController
-import com.wiconic.domoticzapp.controller.GateController
+import com.wiconic.domoticzapp.service.MessageHandler
 import com.wiconic.domoticzapp.controller.CameraSwipeController
 import com.wiconic.domoticzapp.controller.AlertSwipeController
-import com.wiconic.domoticzapp.controller.AlertController
-import com.wiconic.domoticzapp.controller.GeofenceController
-import com.wiconic.domoticzapp.model.AppPreferences
+import com.wiconic.domoticzapp.service.DomoticzAppService
 import com.wiconic.domoticzapp.ui.SettingsActivity
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mainModelView: MainModelView
@@ -37,6 +34,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var cameraImageView: ImageView
     private lateinit var alertCardView: CardView
     private lateinit var openGateButton: Button
+    private lateinit var domoticzAppService: DomoticzAppService
+    private lateinit var messageHandler: MessageHandler
+    private var isBound = false    
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,21 +49,36 @@ class MainActivity : AppCompatActivity() {
         alertTextView = findViewById(R.id.alertTextView)
         alertCardView = findViewById(R.id.alertCardView)        
         geofenceIcon = findViewById(R.id.geofenceIcon)
-        serverConnectionIcon = findViewById(R.id.serverConnectionIcon)        
-        mainModelView.initializeComponents(this, cameraImageView, openGateButton, geofenceIcon, serverConnectionIcon)
+        serverConnectionIcon = findViewById(R.id.serverConnectionIcon)
 
-        mainModelView.getAlertController().setAlertView(alertTextView)
-        mainModelView.getCameraController().setImageView(cameraImageView)
+        val serviceIntent = Intent(this, DomoticzAppService::class.java)
+        startService(serviceIntent)
+        bindService(serviceIntent, connection, Context.BIND_AUTO_CREATE)
+    }
 
-        cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
-        cameraImageView.setOnTouchListener(cameraSwipeController)
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            Log.d("MainActivity", "Service connected successfully")            
+            val binder = service as DomoticzAppService.LocalBinder
+            domoticzAppService = binder.getService()
+            isBound = true
 
-        alertSwipeController = AlertSwipeController(this, alertCardView, mainModelView.getAlertController()::purgeAlerts)
-        alertCardView.setOnTouchListener(alertSwipeController)
+            messageHandler = domoticzAppService.getMessageHandler()
+            mainModelView.initializeComponents(this@MainActivity, cameraImageView, openGateButton, geofenceIcon, serverConnectionIcon, messageHandler)
+            mainModelView.getAlertController().setAlertView(alertTextView)
+            mainModelView.getCameraController().setImageView(cameraImageView)
+            cameraSwipeController = CameraSwipeController(this@MainActivity, mainModelView.getCameraController(), cameraImageView)
+            cameraImageView.setOnTouchListener(cameraSwipeController)
+            alertSwipeController = AlertSwipeController(this@MainActivity, alertCardView, mainModelView.getAlertController()::purgeAlerts)
+            alertCardView.setOnTouchListener(alertSwipeController)
+            openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
+            PreferenceManager.getDefaultSharedPreferences(this@MainActivity).registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
+        }
 
-        PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
-
-        openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            isBound = false
+            Log.d("MainActivity", "Service disconnected")
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -83,6 +98,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
+        PreferenceManager.getDefaultSharedPreferences(this)
+            .unregisterOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
+
+        if (isBound) {
+            unbindService(connection)
+            isBound = false
+        }
     }
 }

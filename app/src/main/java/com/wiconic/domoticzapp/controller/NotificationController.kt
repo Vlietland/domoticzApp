@@ -14,5 +14,6 @@ class NotificationController(
 
     fun onNewAlertsAvailable() {
         getAlerts()
+        Log.i(TAG, "Notification received, requesting Alert list.")        
     }
 }

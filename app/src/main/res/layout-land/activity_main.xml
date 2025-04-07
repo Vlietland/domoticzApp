@@ -24,6 +24,15 @@
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_baseline_location_off"
             android:contentDescription="Geofence Status" />
+
+        <ImageView
+            android:id="@+id/serverConnectionIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_server_connection_deactive"
+            android:contentDescription="Server Connection Status" />            
     </androidx.appcompat.widget.Toolbar>
 
     <ImageView

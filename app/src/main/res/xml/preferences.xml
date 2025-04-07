@@ -46,18 +46,22 @@
             android:inputType="numberDecimal|numberSigned"
             app:iconSpaceReserved="false" />
 
-        <SeekBarPreference
+        <EditTextPreference
             android:key="geofence_radius"
             android:title="@string/geofence_radius_title"
             android:summary="@string/geofence_radius_summary"
-            android:inputType="number"            
-            app:min="10"
-            android:defaultValue="100"
-            android:max="500"
+            android:inputType="number"      
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="polling_frequency"
+            android:key="minimum polling_frequency"
+            android:title="@string/polling_frequency_title"
+            android:summary="@string/polling_frequency_summary"
+            android:inputType="number"
+            app:iconSpaceReserved="false" />
+
+        <EditTextPreference
+            android:key="maximum polling_frequency"
             android:title="@string/polling_frequency_title"
             android:summary="@string/polling_frequency_summary"
             android:inputType="number"
@@ -69,7 +73,6 @@
             android:summary="@string/measurements_before_trigger_summary"
             android:inputType="number"
             app:iconSpaceReserved="false" />
-
     </PreferenceCategory>
 
 

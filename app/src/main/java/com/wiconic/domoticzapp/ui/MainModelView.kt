@@ -8,7 +8,7 @@ import androidx.cardview.widget.CardView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wiconic.domoticzapp.connectivity.AppServerConnector
-import com.wiconic.domoticzapp.controller.MessageHandler
+import com.wiconic.domoticzapp.service.MessageHandler
 import com.wiconic.domoticzapp.controller.CameraController
 import com.wiconic.domoticzapp.controller.GateController
 import com.wiconic.domoticzapp.controller.GeofenceController
@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 
 class MainModelView : ViewModel() {
     private lateinit var appServerConnector: AppServerConnector
-    private lateinit var messageHandler: MessageHandler
     private lateinit var appPreferences: AppPreferences
     private lateinit var gateController: GateController
     private lateinit var geofenceController: GeofenceController
@@ -35,11 +34,17 @@ class MainModelView : ViewModel() {
     private lateinit var geofence: Geofence
     private lateinit var notificationController: NotificationController
 
-    fun initializeComponents(context: Context, cameraImageView: ImageView, openGateButton: Button, geofenceIcon: ImageView, serverConnectionIcon: ImageView) {
+    fun initializeComponents(
+        context: Context, 
+        cameraImageView: ImageView, 
+        openGateButton: Button, 
+        geofenceIcon: ImageView, 
+        serverConnectionIcon: ImageView,
+        messageHandler: MessageHandler
+        ) {
         if (!::appPreferences.isInitialized) {
             appPreferences = AppPreferences(context)
             appServerConnector = AppServerConnector(appPreferences)
-            messageHandler = MessageHandler()
 
             geofence = Geofence(appPreferences)
             alertController = AlertController(appServerConnector::sendMessage)
@@ -67,7 +72,7 @@ class MainModelView : ViewModel() {
             messageHandler.setOnSetCurrentCamera(cameraController::setCurrentCamera)
             messageHandler.setOnImage(cameraController::onImage)
 
-            geofence.setOnGeofenceStateChangeCallback(geofenceController::onGeofenceStateChangeCallback)
+            geofence.setOnGeofenceStateChangeCallback(geofenceController::onIsWithinGeofenceCallback)
 
             viewModelScope.launch(Dispatchers.IO) {
                 appServerConnector.initializeConnection()

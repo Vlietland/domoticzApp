@@ -21,7 +21,7 @@
     <string name="geofence_lon_summary">Enter longitude (e.g., 4.9041 for Amsterdam)</string>
     <string name="geofence_radius_title">Radius (meters)</string>
     <string name="geofence_radius_summary">Enter radius in meters (e.g., 100 for 100m radius)</string>
-    <string name="polling_frequency_title">Polling Frequency (ms)</string>
+    <string name="polling_frequency_title">Polling Frequency in seconds</string>
     <string name="polling_frequency_summary">How often to check location in milliseconds (e.g., 60000 for 1 minute)</string>
     <string name="measurements_before_trigger_title">Measurements Before Trigger</string>
     <string name="measurements_before_trigger_summary">Number of measurements needed before triggering (e.g., 3 for better accuracy)</string>
