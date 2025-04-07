@@ -30,10 +30,11 @@ import kotlinx.coroutines.launch
 class MainActivity : AppCompatActivity() {
     private lateinit var mainModelView: MainModelView
     private lateinit var cameraSwipeController: CameraSwipeController
+    private lateinit var geofenceIcon: ImageView
     private lateinit var alertSwipeController: AlertSwipeController
     private lateinit var alertTextView: TextView
     private lateinit var cameraImageView: ImageView
-    private lateinit var notificationCardView: CardView
+    private lateinit var alertCardView: CardView
     private lateinit var openGateButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,25 +45,23 @@ class MainActivity : AppCompatActivity() {
         mainModelView = ViewModelProvider(this)[MainModelView::class.java]
         openGateButton = findViewById(R.id.button_open_gate)
         cameraImageView = findViewById(R.id.cameraImageView)
-        alertTextView = findViewById(R.id.messages)
-        mainModelView.initializeComponents(this, cameraImageView, alertTextView, openGateButton)
+        alertTextView = findViewById(R.id.alertTextView)
+        alertCardView = findViewById(R.id.alertCardView)        
+        geofenceIcon = findViewById(R.id.geofenceIcon)
+        mainModelView.initializeComponents(this, this, cameraImageView, openGateButton, geofenceIcon)
 
-        val alertController = mainModelView.getAlertController()
-        alertController.setOnNewAlertsCallback(this::reloadAlertView)
-
+        mainModelView.getAlertController().setAlertView(alertTextView)
         mainModelView.getCameraController().setImageView(cameraImageView)
 
         cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
         cameraImageView.setOnTouchListener(cameraSwipeController)
 
-        alertSwipeController = AlertSwipeController(this, notificationCardView, mainModelView.getAlertController()::purgeAlerts)
-        notificationCardView.setOnTouchListener(alertSwipeController)
+        alertSwipeController = AlertSwipeController(this, alertCardView, mainModelView.getAlertController()::purgeAlerts)
+        alertCardView.setOnTouchListener(alertSwipeController)
 
         PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
 
         openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
-
-        mainModelView.getCameraController().loadNewImageFromCurrentCamera()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -80,10 +79,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun reloadAlertView() {
-        alertTextView.text = mainModelView.getAlertController()
-            .getCachedAlerts()
-            .joinToString(separator = "\n")  // Convert List<String> to a single String
+    fun onWebSocketOpen()
+    {
+        mainModelView.getCameraController().loadNewImageFromCurrentCamera()
+        mainModelView.getAlertController().getAlerts()
     }
 
     override fun onDestroy() {

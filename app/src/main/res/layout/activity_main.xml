@@ -13,7 +13,17 @@
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+
+        <ImageView
+            android:id="@+id/geofenceIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_baseline_location_off"
+            android:contentDescription="Geofence Status" />
+    </androidx.appcompat.widget.Toolbar>
 
     <ImageView
         android:id="@+id/cameraImageView"
@@ -29,7 +39,7 @@
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/notification_card"
+        android:id="@+id/alertCardView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:clickable="true"
@@ -56,14 +66,14 @@
                 android:layout_height="wrap_content"
                 android:padding="12dp"
                 android:background="@color/colorPrimaryDark"
-                android:text="Notification Log"
+                android:text="Log"
                 android:textColor="@color/textPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
             <!-- Notification Message TextView -->
             <TextView
-                android:id="@+id/messages"
+                android:id="@+id/alertTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"

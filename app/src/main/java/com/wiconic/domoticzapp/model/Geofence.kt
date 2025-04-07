@@ -8,7 +8,7 @@ class Geofence(
     private var geofenceCenterLon: Double = appPreferences.getGeofenceCenterLon()
     private var geofenceRadius: Int = appPreferences.getGeofenceRadius()
     private var measurementsBeforeTrigger: Int = appPreferences.getMeasurementsBeforeTrigger()
-    private var onGeofenceCallback: ((Boolean) -> Unit)? = null
+    private var onGeofenceStateChangeCallback: ((Boolean) -> Unit)? = null
 
     var isTriggered = false
         private set
@@ -16,8 +16,8 @@ class Geofence(
     var hasLeftArea = true
         private set
 
-    fun setOnGeofenceCallback(callback: (Boolean) -> Unit) {
-        this.onGeofenceCallback = callback
+    fun setOnGeofenceStateChangeCallback(callback: (Boolean) -> Unit) {
+        this.onGeofenceStateChangeCallback = callback
     }
 
     private var consecutiveInAreaCount = 0
@@ -37,11 +37,12 @@ class Geofence(
             if (++consecutiveInAreaCount >= measurementsBeforeTrigger && !isTriggered && hasLeftArea) {
                 isTriggered = true
                 hasLeftArea = false
-                onGeofenceCallback?.invoke(true)
+                onGeofenceStateChangeCallback?.invoke(true)
             }
         } else {
             consecutiveInAreaCount = 0
             if (isTriggered) hasLeftArea = true
+            onGeofenceStateChangeCallback?.invoke(false)            
         }
     }
 

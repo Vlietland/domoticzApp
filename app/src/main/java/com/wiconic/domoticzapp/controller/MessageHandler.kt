@@ -2,10 +2,11 @@ package com.wiconic.domoticzapp.controller
 
 import android.util.Log
 import org.json.JSONObject
+import org.json.JSONArray
 
 class MessageHandler {
     private var onNewAlertsAvailable: (() -> Unit)? = null
-    private var onAlerts: ((String) -> Unit)? = null
+    private var onAlerts: ((JSONArray) -> Unit)? = null
     private var onSetCurrentCamera: ((String) -> Unit)? = null
     private var onImage: ((String) -> Unit)? = null
     private val TAG = "MessageHandler"
@@ -14,7 +15,7 @@ class MessageHandler {
         this.onNewAlertsAvailable = callback
     }
 
-    fun setOnAlerts(callback: (String) -> Unit) {
+    fun setOnAlerts(callback: (JSONArray) -> Unit) {
         this.onAlerts = callback
     }
 
@@ -51,19 +52,17 @@ class MessageHandler {
     }
 
    private fun handleAlerts(json: JSONObject) {
-        val alerts = json.optString("payload", "")
-        Log.i(TAG, "New alerts received")
-        onAlerts?.invoke(alerts)
-        if (alerts.isNotEmpty()) {
-            val lastDeviceName = alerts.split(",").last().trim() // Example parsing
-            onSetCurrentCamera?.invoke(lastDeviceName)
-            Log.i(TAG, "Alerts received: $alerts")  
+        Log.i(TAG, "New alert list received")    
+        val alertList = json.optJSONArray("alertList")        
+        if (alertList != null) {
+            onAlerts?.invoke(alertList)
+            Log.i(TAG, "Alerts received: $alertList")  
         }      
     }
 
     private fun handleCameraImage(json: JSONObject) {
         val cameraId = json.optString("cameraId")
-        val imageData = json.optString("imageData", "")
+        val imageData = json.optString("imageData", "Unknown data")
 
         if (imageData.isNotEmpty()) {
             onImage?.invoke(imageData)

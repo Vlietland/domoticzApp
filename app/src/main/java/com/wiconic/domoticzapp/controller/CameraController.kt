@@ -5,6 +5,11 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
+import android.os.Handler
+import android.os.Looper
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import com.wiconic.domoticzapp.BuildConfig
 
 class CameraController(
@@ -52,11 +57,7 @@ class CameraController(
         }
     }
 
-    fun onWebsocketOpen() {
-        loadNewImageFromCurrentCamera()  
-    }
-
-    fun loadCameraImage() {
+    private fun loadCameraImage() {
         val message = "{\"type\": \"getCameraImage\", \"cameraId\": \"$currentCameraIndex\"}"
         Log.d(TAG, "Requesting camera image for Camera ID: $currentCameraIndex with message: $message")
         sendMessage(message)
@@ -66,19 +67,23 @@ class CameraController(
     fun onImage(imageData: String) {
         Log.d(TAG, "Received image data. Length: ${imageData.length}")
         Log.d(TAG, "Attempting to decode and display image.")
-        try {
-            Log.d(TAG, "Image data size: ${imageData.length}")
-            val decodedBytes = Base64.decode(imageData, Base64.DEFAULT)
-            val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-            
-            if (bitmap != null) {
-                cameraImageView.setImageBitmap(bitmap)
-                Log.d(TAG, "Bitmap successfully displayed on ImageView.")
-            } else {
-                Log.e(TAG, "Failed to decode bitmap. Bitmap is null.")
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                Log.d(TAG, "Image data size: ${imageData.length}")
+                val decodedBytes = Base64.decode(imageData, Base64.DEFAULT)
+                val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                if (bitmap != null) {
+                    Log.d(TAG, "Bitmap successfully decoded.")
+                    launch(Dispatchers.Main) {  
+                        cameraImageView.setImageBitmap(bitmap)
+                        Log.d(TAG, "Bitmap successfully displayed on ImageView.")
+                    }
+                } else {
+                    Log.e(TAG, "Failed to decode bitmap. Bitmap is null.")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to decode image: ${e.message}")
             }
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to decode image: ${e.message}")
         }
     }
 

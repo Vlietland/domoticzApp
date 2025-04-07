@@ -2,17 +2,17 @@ package com.wiconic.domoticzapp.controller
 
 import android.util.Log
 import android.widget.TextView
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import org.json.JSONArray
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale  
+import java.util.Locale
 import com.wiconic.domoticzapp.BuildConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class AlertController(private val sendMessage: (String) -> Unit) {   
 
-    private var onNewAlerts: (() -> Unit)? = null
     private val deviceToMessageMap = mapOf(
         BuildConfig.DEVICE_1 to BuildConfig.DEVICE_1_MESSAGE,
         BuildConfig.DEVICE_2 to BuildConfig.DEVICE_2_MESSAGE,
@@ -20,31 +20,34 @@ class AlertController(private val sendMessage: (String) -> Unit) {
         BuildConfig.DEVICE_4 to BuildConfig.DEVICE_4_MESSAGE,
         BuildConfig.DEVICE_5 to BuildConfig.DEVICE_5_MESSAGE
     )
+    private val alertCache = mutableListOf<String>()
+    private var alertTextView: TextView? = null
     private var TAG = "AlertController"    
 
-    private val alertCache = mutableListOf<String>()  // Temporary cache for alert messages
-
-    fun setOnNewAlertsCallback(callback: () -> Unit) {
-        onNewAlerts = callback
+    fun setAlertView(newAlertTextView: TextView) {
+        alertTextView = newAlertTextView
     }
 
-    fun onAlerts(alerts: String) {
-        val alertList = alerts.split(",").map { it.trim() }
-        for (deviceName in alertList) {
+    fun onAlerts(alerts: JSONArray) {
+        alertCache.clear()            
+        for (i in 0 until alerts.length()) {
+            val alert = alerts.getJSONObject(i)
+            val deviceName = alert.getString("deviceName")
+            val timestamp = alert.getDouble("timestamp")
             val alertText = deviceToMessageMap[deviceName]
             if (alertText != null) {
-                val timestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date())
-                val formattedMessage = "[$timestamp] $alertText"
+                val formattedTimestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp.toLong() * 1000))
+                val formattedMessage = "[$formattedTimestamp] $alertText"
                 alertCache.add(formattedMessage)
-                onNewAlerts?.invoke()
-                Log.i(TAG, "Message added for device: $deviceName - $formattedMessage")
+                updateAlertView()
+                Log.i(TAG, "Messages to the AlertText cache")
             } else {
                 Log.w(TAG, "Unknown device name: $deviceName")
             }
         }
     }
 
-    fun loadAlerts() {
+    fun getAlerts() {
         val message = "{\"type\": \"getAlerts\"}"
         Log.d(TAG, "Requesting alert list with message: $message")
         sendMessage(message)
@@ -54,11 +57,14 @@ class AlertController(private val sendMessage: (String) -> Unit) {
         alertCache.clear()
         val message = "{\"type\": \"purgeAlerts\"}"
         Log.d(TAG, "Requesting alert list with message: $message")
-        sendMessage(message)
-        onNewAlerts?.invoke()       
+        sendMessage(message)   
+        alertCache.clear() 
+        updateAlertView()
     }
 
-    fun getCachedAlerts(): List<String> {
-        return alertCache.toList()
+    private fun updateAlertView() {
+        CoroutineScope(Dispatchers.Main).launch {
+            alertTextView?.text = alertCache.joinToString("\n")
+        }
     }
 }

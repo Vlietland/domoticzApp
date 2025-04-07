@@ -5,6 +5,27 @@
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        android:visibility="gone">>        
+
+        <ImageView
+            android:id="@+id/geofenceIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|center_vertical"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_baseline_location_off"
+            android:contentDescription="Geofence Status" />
+    </androidx.appcompat.widget.Toolbar>
+
     <ImageView
         android:id="@+id/cameraImageView"
         android:layout_width="match_parent"
@@ -14,19 +35,8 @@
         android:clickable="true"
         android:focusable="true" />
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:visibility="gone"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
-
     <androidx.cardview.widget.CardView
-        android:id="@+id/notification_card"
+        android:id="@+id/alertCardView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
@@ -55,7 +65,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/messages"
+                android:id="@+id/alertTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
