@@ -62,6 +62,11 @@ class AlertController(private val sendMessage: (String) -> Unit) {
         updateAlertView()
     }
 
+    fun onWebSocketActiveListeners(active: Boolean)
+    {   
+        if (active) getAlerts()
+    }
+
     private fun updateAlertView() {
         CoroutineScope(Dispatchers.Main).launch {
             alertTextView?.text = alertCache.joinToString("\n")

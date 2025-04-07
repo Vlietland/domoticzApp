@@ -14,6 +14,7 @@ import com.wiconic.domoticzapp.controller.GateController
 import com.wiconic.domoticzapp.controller.GeofenceController
 import com.wiconic.domoticzapp.controller.AlertController
 import com.wiconic.domoticzapp.controller.NotificationController
+import com.wiconic.domoticzapp.controller.ServerIconController
 import com.wiconic.domoticzapp.controller.PreferenceObserver
 import com.wiconic.domoticzapp.ui.MainActivity
 import com.wiconic.domoticzapp.model.Geofence
@@ -29,11 +30,12 @@ class MainModelView : ViewModel() {
     private lateinit var geofenceController: GeofenceController
     private lateinit var cameraController: CameraController
     private lateinit var alertController: AlertController
+    private lateinit var serverIconController: ServerIconController
     private lateinit var preferenceObserver: PreferenceObserver
     private lateinit var geofence: Geofence
     private lateinit var notificationController: NotificationController
 
-    fun initializeComponents(context: Context, parent: MainActivity, cameraImageView: ImageView, openGateButton: Button, geofenceIcon: ImageView) {
+    fun initializeComponents(context: Context, cameraImageView: ImageView, openGateButton: Button, geofenceIcon: ImageView, serverConnectionIcon: ImageView) {
         if (!::appPreferences.isInitialized) {
             appPreferences = AppPreferences(context)
             appServerConnector = AppServerConnector(appPreferences)
@@ -44,6 +46,7 @@ class MainModelView : ViewModel() {
             cameraController = CameraController(context, cameraImageView, appServerConnector::sendMessage)
             gateController = GateController(appServerConnector::sendMessage, openGateButton)
             geofenceController = GeofenceController(context, gateController::openGate, appPreferences, geofenceIcon)
+            serverIconController = ServerIconController(context, serverConnectionIcon)
             notificationController = NotificationController(alertController::getAlerts)
 
             preferenceObserver = PreferenceObserver(
@@ -55,8 +58,9 @@ class MainModelView : ViewModel() {
             )
 
             appServerConnector.setOnMessageReceivedCallback(messageHandler::onMessageReceived)
-            val mainActivity = context as? MainActivity
-            appServerConnector.setOnWebSocketOpenCallback(parent::onWebSocketOpen)
+            appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)
+            appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)
+            appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
     
             messageHandler.setOnNewAlertsAvailable(notificationController::onNewAlertsAvailable)
             messageHandler.setOnAlerts(alertController::onAlerts)

@@ -87,6 +87,11 @@ class CameraController(
         }
     }
 
+    fun onWebSocketActiveListeners(active: Boolean)
+    {   
+        if (active) loadNewImageFromCurrentCamera()
+    }
+
     private fun displayImageLoading() {
         Log.d(TAG, "Image loading started.")
     }

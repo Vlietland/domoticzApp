@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mainModelView: MainModelView
     private lateinit var cameraSwipeController: CameraSwipeController
     private lateinit var geofenceIcon: ImageView
+    private lateinit var serverConnectionIcon: ImageView    
     private lateinit var alertSwipeController: AlertSwipeController
     private lateinit var alertTextView: TextView
     private lateinit var cameraImageView: ImageView
@@ -48,7 +49,8 @@ class MainActivity : AppCompatActivity() {
         alertTextView = findViewById(R.id.alertTextView)
         alertCardView = findViewById(R.id.alertCardView)        
         geofenceIcon = findViewById(R.id.geofenceIcon)
-        mainModelView.initializeComponents(this, this, cameraImageView, openGateButton, geofenceIcon)
+        serverConnectionIcon = findViewById(R.id.serverConnectionIcon)        
+        mainModelView.initializeComponents(this, cameraImageView, openGateButton, geofenceIcon, serverConnectionIcon)
 
         mainModelView.getAlertController().setAlertView(alertTextView)
         mainModelView.getCameraController().setImageView(cameraImageView)
@@ -77,12 +79,6 @@ class MainActivity : AppCompatActivity() {
             }
             else -> super.onOptionsItemSelected(item)
         }
-    }
-
-    fun onWebSocketOpen()
-    {
-        mainModelView.getCameraController().loadNewImageFromCurrentCamera()
-        mainModelView.getAlertController().getAlerts()
     }
 
     override fun onDestroy() {

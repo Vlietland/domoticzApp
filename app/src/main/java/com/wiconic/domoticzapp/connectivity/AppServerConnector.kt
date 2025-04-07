@@ -1,5 +1,7 @@
 package com.wiconic.domoticzapp.connectivity
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import okhttp3.*
 import java.util.concurrent.TimeUnit
@@ -9,34 +11,38 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
     private val client = OkHttpClient.Builder().pingInterval(30, TimeUnit.SECONDS).build()
     private var webSocket: WebSocket? = null
     private var isConnected = false
-    private var onWebSocketOpen: (() -> Unit)? = null
+    private val onWebSocketActiveListeners = mutableListOf<(Boolean) -> Unit>()
     private var onMessageReceived: ((String) -> Unit)? = null
-    private var onWebSocketClosed: (() -> Unit)? = null
-    private var TAG = "DomoticzAppServerConnection"    
+    private var reconnectAttempts = 0
+    private var handler = Handler(Looper.getMainLooper())
+    private val RECONNECT_DELAY_BASE = 2000L  // Base delay in milliseconds (2 seconds)
+    private val MAX_RECONNECT_DELAY = 30000L  // Maximum delay (30 seconds)
+    private var TAG = "DomoticzAppServerConnection"
 
-    fun setOnWebSocketOpenCallback(callback: () -> Unit) {
-        this.onWebSocketOpen = callback
+    fun addOnWebSocketActiveListener(listener: (Boolean) -> Unit) {
+        onWebSocketActiveListeners.add(listener)
+    }
+
+    fun removeOnWebSocketActiveListener(listener: (Boolean) -> Unit) {
+        onWebSocketActiveListeners.remove(listener)
     }
 
     fun setOnMessageReceivedCallback(callback: (String) -> Unit) {
         this.onMessageReceived = callback
     }
 
-    fun setOnWebSocketClosedCallback(callback: () -> Unit) {
-        this.onWebSocketClosed = callback
-    }
-
     fun initializeConnection() {
-        val serverUrl = appPreferences.getWebSocketUrl() 
+        val serverUrl = appPreferences.getWebSocketUrl()
         if (isConnected) disconnect()
         connect(serverUrl)
-    }    
+    }
 
     private fun createWebSocketListener() = object : WebSocketListener() {
         override fun onOpen(webSocket: WebSocket, response: Response) {
             isConnected = true
+            reconnectAttempts = 0
             Log.d(TAG, "WebSocket connected successfully")
-            onWebSocketOpen?.invoke()
+            onWebSocketActiveListeners.forEach { it.invoke(true) }
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
@@ -47,13 +53,27 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
         override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
             isConnected = false
             Log.e(TAG, "WebSocket connection failed: ${t.message}")
+            onWebSocketActiveListeners.forEach { it.invoke(false) }            
+            scheduleReconnection()
         }
 
         override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
             isConnected = false
             Log.d(TAG, "WebSocket closed: $reason")
-            onWebSocketClosed?.invoke()
+            scheduleReconnection()
         }
+    }
+
+    private fun scheduleReconnection() {
+        reconnectAttempts++
+        val delay = (RECONNECT_DELAY_BASE * Math.pow(2.0, reconnectAttempts.toDouble())).toLong().coerceAtMost(MAX_RECONNECT_DELAY)
+
+        Log.d(TAG, "Scheduling reconnection attempt #$reconnectAttempts in ${delay / 1000} seconds")
+
+        handler.postDelayed({
+            Log.d(TAG, "Attempting to reconnect...")
+            initializeConnection()
+        }, delay)
     }
 
     fun sendMessage(message: String): Boolean {
@@ -67,7 +87,7 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
         val success = webSocket!!.send(message)
         if (!success) {
             Log.e(TAG, "Failed to send message via WebSocket. Attempting to reconnect.")
-            initializeConnection()
+            scheduleReconnection()
         }
         return success
     }
@@ -83,6 +103,7 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
             webSocket?.close(1000, "App closed")
             webSocket = null
             isConnected = false
+            reconnectAttempts = 0
         }
     }
 }
