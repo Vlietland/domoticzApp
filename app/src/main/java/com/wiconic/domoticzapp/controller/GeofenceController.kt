@@ -1,6 +1,5 @@
 package com.wiconic.domoticzapp.controller
 
-import android.content.Context
 import android.util.Log
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
@@ -9,17 +8,17 @@ import com.wiconic.domoticzapp.model.Geofence
 import com.wiconic.domoticzapp.model.AppPreferences
 
 class GeofenceController(
-    private val context: Context,
     private val openGate: () -> Unit,
-    private val appPreferences: AppPreferences,
-    private val geofenceIcon: ImageView
+    private val appPreferences: AppPreferences
 ) {
     private var isCurrentlyWithinGeofence = false
+    private var geofenceIcon: ImageView? = null
     private val TAG = "GeofenceController"
     private val ICON_INSIDE_GEOFENCE = R.drawable.ic_baseline_location_on
     private val ICON_OUTSIDE_GEOFENCE = R.drawable.ic_baseline_location_off
 
-    init {
+    fun setGeofenceIcon(icon: ImageView) {
+        geofenceIcon = icon
         updateGeofenceIcon()
     }
 
@@ -41,10 +40,10 @@ class GeofenceController(
     }
 
     private fun updateGeofenceIcon() {
-        val icon = if (isCurrentlyWithinGeofence) ICON_INSIDE_GEOFENCE else ICON_OUTSIDE_GEOFENCE
+        if (geofenceIcon == null) return
+        val iconResource = if (isCurrentlyWithinGeofence) ICON_INSIDE_GEOFENCE else ICON_OUTSIDE_GEOFENCE
         val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
-
-        geofenceIcon.setImageResource(icon)
-        geofenceIcon.visibility = visibility
+        geofenceIcon?.setImageResource(iconResource)
+        geofenceIcon?.visibility = visibility
     }
 }

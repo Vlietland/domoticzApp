@@ -1,6 +1,5 @@
 package com.wiconic.domoticzapp.controller
 
-import android.content.Context
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
@@ -12,12 +11,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import com.wiconic.domoticzapp.BuildConfig
 
-class CameraController(
-    private val context: Context,
-    private var cameraImageView: ImageView,
-
-    private val sendMessage: (String) -> Unit) {
-
+class CameraController(private val sendMessage: (String) -> Unit
+    ) {
+    private var cameraImageView: ImageView? = null
     private var currentCameraIndex = 1
     private var maxCameras = BuildConfig.MAX_CAMERAS
     private val TAG = "CameraController"        
@@ -67,6 +63,7 @@ class CameraController(
     fun onImage(imageData: String) {
         Log.d(TAG, "Received image data. Length: ${imageData.length}")
         Log.d(TAG, "Attempting to decode and display image.")
+        if (cameraImageView == null) return
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 Log.d(TAG, "Image data size: ${imageData.length}")
@@ -75,7 +72,7 @@ class CameraController(
                 if (bitmap != null) {
                     Log.d(TAG, "Bitmap successfully decoded.")
                     launch(Dispatchers.Main) {  
-                        cameraImageView.setImageBitmap(bitmap)
+                        cameraImageView?.setImageBitmap(bitmap)
                         Log.d(TAG, "Bitmap successfully displayed on ImageView.")
                     }
                 } else {

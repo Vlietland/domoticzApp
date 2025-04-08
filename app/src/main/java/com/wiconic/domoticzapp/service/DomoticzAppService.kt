@@ -1,34 +1,46 @@
 package com.wiconic.domoticzapp.service
 
 import android.app.Service
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.wiconic.domoticzapp.R
 import com.wiconic.domoticzapp.connectivity.AppServerConnector
 import com.wiconic.domoticzapp.model.AppPreferences
 import com.wiconic.domoticzapp.service.MessageHandler
 
-class DomoticzAppService : Service() {
-
+class DomoticzAppService : Service () {
     private val TAG = "DomoticzAppService"
     private lateinit var appServerConnector: AppServerConnector
+    private lateinit var appPreferences: AppPreferences
+    private var onServiceCreatedCallback: (() -> Unit)? = null
     private val messageHandler = MessageHandler(this)
-    private val binder = LocalBinder()   
+    private val binder = LocalBinder()
+    private var isBound = false
 
-    inner class LocalBinder : Binder() {  
+    inner class LocalBinder : Binder() {
         fun getService(): DomoticzAppService = this@DomoticzAppService
     }
 
+    fun setOnServiceCreatedCallback(callback: () -> Unit) {
+        onServiceCreatedCallback = callback
+    }
+
+    fun getMessageHandler(): MessageHandler = messageHandler
+    fun getAppServerConnector(): AppServerConnector = appServerConnector
+    fun getAppPreferences(): AppPreferences = appPreferences
+    fun isServiceBound() = isBound
+
     override fun onCreate() {
         super.onCreate()
-        Log.d(TAG, "Service created successfully") // Added Log        
-        val appPreferences = AppPreferences(this)
+        appPreferences = AppPreferences(this)
         appServerConnector = AppServerConnector(appPreferences)
         appServerConnector.setOnMessageReceivedCallback(messageHandler::onMessageReceived)
         appServerConnector.initializeConnection()
@@ -40,8 +52,8 @@ class DomoticzAppService : Service() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startForegroundService()
-         Log.d(TAG, "Foreground Service started successfully")
-         return START_STICKY
+        Log.d(TAG, "Foreground Service started successfully")
+        return START_STICKY
     }
 
     private fun startForegroundService() {
@@ -68,10 +80,8 @@ class DomoticzAppService : Service() {
         Log.i(TAG, "WebSocketService stopped and WebSocket disconnected")
     }
 
-    fun getMessageHandler(): MessageHandler = messageHandler
-
     override fun onBind(intent: Intent?): IBinder {
         Log.d("DomoticzAppService", "Service bound successfully")
-        return binder  // Make sure to return the binder
+        return binder
     }
 }

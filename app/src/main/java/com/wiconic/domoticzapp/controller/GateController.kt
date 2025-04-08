@@ -4,13 +4,12 @@ import android.util.Log
 import android.widget.Button
 
 class GateController(
-    private val sendMessage: (String) -> Unit,
-    private val openGateButton: Button) {
-
+    private val sendMessage: (String) -> Unit
+    ) {
     private val TAG = "GateController"
 
-    init {
-        openGateButton.setOnClickListener { openGate() }
+    fun setGateButton(button: Button) {
+        button.setOnClickListener { openGate() }
     }
 
     fun openGate() {

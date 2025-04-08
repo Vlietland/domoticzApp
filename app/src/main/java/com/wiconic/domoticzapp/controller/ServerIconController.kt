@@ -1,19 +1,17 @@
 package com.wiconic.domoticzapp.controller
 
-import android.content.Context
 import android.widget.ImageView
 import com.wiconic.domoticzapp.R
 import com.wiconic.domoticzapp.model.AppPreferences
 
-class ServerIconController(
-    private val context: Context,
-    private val serverConnectionIcon: ImageView
-) {
+class ServerIconController() {
     private var isConnected = false
+    private var serverConnectionIcon: ImageView? = null
     private val ICON_CONNECTED = R.drawable.ic_server_connection_active
     private val ICON_DISCONNECTED = R.drawable.ic_server_connection_deactive
 
-    init {
+    fun setServerConnectionIcon(icon: ImageView) {
+        serverConnectionIcon = icon
         updateServerConnectionIcon()
     }
 
@@ -23,7 +21,8 @@ class ServerIconController(
     }
 
     private fun updateServerConnectionIcon() {
-        val icon = if (isConnected) ICON_CONNECTED else ICON_DISCONNECTED
-        serverConnectionIcon.setImageResource(icon)
+        if (serverConnectionIcon == null) return        
+        val newIconImage = if (isConnected) ICON_CONNECTED else ICON_DISCONNECTED
+        serverConnectionIcon?.setImageResource(newIconImage)
     }
 }
