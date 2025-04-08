@@ -44,7 +44,7 @@ class MainModelView : ViewModel() {
         ) {
         if (!::appPreferences.isInitialized) {
             appPreferences = AppPreferences(context)
-            appServerConnector = AppServerConnector(appPreferences)
+            //appServerConnector = AppServerConnector(appPreferences)
 
             geofence = Geofence(appPreferences)
             alertController = AlertController(appServerConnector::sendMessage)
@@ -62,10 +62,10 @@ class MainModelView : ViewModel() {
                 stopGeofence = getGeofenceController()::stopGeofenceMonitoring
             )
 
-            appServerConnector.setOnMessageReceivedCallback(messageHandler::onMessageReceived)
-            appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)
-            appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)
-            appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
+            //appServerConnector.setOnMessageReceivedCallback(messageHandler::onMessageReceived)
+            //appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)
+            //appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)
+            //appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
     
             messageHandler.setOnNewAlertsAvailable(notificationController::onNewAlertsAvailable)
             messageHandler.setOnAlerts(alertController::onAlerts)

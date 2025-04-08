@@ -54,14 +54,14 @@
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="minimum polling_frequency"
+            android:key="minimum_polling_frequency"
             android:title="@string/polling_frequency_title"
             android:summary="@string/polling_frequency_summary"
             android:inputType="number"
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="maximum polling_frequency"
+            android:key="maximum_polling_frequency"
             android:title="@string/polling_frequency_title"
             android:summary="@string/polling_frequency_summary"
             android:inputType="number"
