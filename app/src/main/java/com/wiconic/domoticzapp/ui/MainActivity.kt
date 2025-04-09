@@ -52,25 +52,29 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "Oncreate called")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
-        mainModelView = ViewModelProvider(this)[MainModelView::class.java]
 
         if (savedInstanceState == null) {
             Log.d(TAG, "Starting DomoticzAppService")
             val serviceIntent = Intent(this, DomoticzAppService::class.java)
             startService(serviceIntent)
         }
-        
+
         val bindIntent = Intent(this, DomoticzAppService::class.java)
         bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     fun onServiceCreatedCallback() {
         Log.d(TAG,"Callback called")
-        mainModelView.initializeControllers(this, domoticzAppService!!)
-        mainModelView.setupMessageHandlerCallbacks(domoticzAppService!!.getMessageHandler())        
+        mainModelView = ViewModelProvider(this)[MainModelView::class.java]
+        if (!mainModelView.isInitialized()) {
+            mainModelView.initializeControllers(this, domoticzAppService!!)
+            mainModelView.setupMessageHandlerCallbacks(domoticzAppService!!.getMessageHandler())
+        }
+        else mainModelView.refreshView()
         initializeUIComponents()
         setupUIComponentsInViewModel()
         setupControllersAndListeners()

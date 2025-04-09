@@ -35,6 +35,7 @@ class MainModelView : ViewModel() {
     private lateinit var domoticzAppService: DomoticzAppService
     private lateinit var appServerConnector: AppServerConnector
     private lateinit var appContext: Context
+    private var initialized = false    
 
     fun initializeControllers(context: Context, service: DomoticzAppService) {
         appContext = context
@@ -63,6 +64,7 @@ class MainModelView : ViewModel() {
             initializeGeofence = geofenceController::startGeofenceMonitoring,
             stopGeofence = geofenceController::stopGeofenceMonitoring
         ) 
+        initialized = true        
     }
 
     fun setupMessageHandlerCallbacks(messageHandler: MessageHandler) {
@@ -92,6 +94,15 @@ class MainModelView : ViewModel() {
     fun getPreferenceObserver() = preferenceObserver
     fun getAppPreferences() = appPreferences
     fun getDomoticzServiceManager() = domoticzAppService
+    fun isInitialized(): Boolean = initialized
+
+    fun refreshView()
+    {   
+        alertController.getAlerts()
+        cameraController.loadNewImageFromCurrentCamera()
+        serverIconController.updateServerConnectionIcon()
+    }
+
 
     override fun onCleared() {
         super.onCleared()
