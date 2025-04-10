@@ -14,12 +14,11 @@ class ServerIconController() {
 
     fun setServerConnectionIcon(icon: ImageView) {
         serverConnectionIcon = icon
-        updateServerConnectionIcon()
     }
 
     fun onWebSocketActiveListeners(isConnected: Boolean) {
         this.isConnected = isConnected
-        Log.d(TAG, "Server connection icon refreshing with server status: ${isConnected}.")
+        Log.d(TAG, "Server connection icon refreshing with server status: ${isConnected}.")                        
         updateServerConnectionIcon()
     }
 

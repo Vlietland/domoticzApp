@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
             mainModelView.initializeControllers(this, domoticzAppService!!)
             mainModelView.setupMessageHandlerCallbacks(domoticzAppService!!.getMessageHandler())
         }
-        else mainModelView.refreshView()
+        mainModelView.refreshView()
         initializeUIComponents()
         setupUIComponentsInViewModel()
         setupControllersAndListeners()

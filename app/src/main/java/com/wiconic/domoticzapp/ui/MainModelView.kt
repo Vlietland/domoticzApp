@@ -1,6 +1,7 @@
 package com.wiconic.domoticzapp.ui
 
 import android.os.Bundle
+import android.util.Log
 import android.content.Context
 import android.widget.ImageView
 import android.widget.TextView
@@ -23,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainModelView : ViewModel() {
+    private val TAG = "MainModelView"      
     private lateinit var appPreferences: AppPreferences
     private lateinit var gateController: GateController
     private lateinit var geofenceController: GeofenceController
@@ -44,18 +46,15 @@ class MainModelView : ViewModel() {
         appPreferences = domoticzAppService.getAppPreferences()           
         geofence = Geofence(appPreferences)
         alertController = AlertController(appServerConnector::sendMessage)
-        appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)
         notificationController = NotificationController(alertController::getAlerts)
-
         cameraController = CameraController(appServerConnector::sendMessage)
-        appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners) 
-
         gateController = GateController(appServerConnector::sendMessage)
         geofenceController = GeofenceController(gateController::openGate, appPreferences)
         geofence.setOnGeofenceStateChangeCallback(geofenceController::onIsWithinGeofenceCallback)  
 
         serverIconController = ServerIconController()   
         appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)        
+        appServerConnector.addOnWebSocketActiveListener(this::onWebSocketActiveListeners) 
 
         preferenceObserver = PreferenceObserver(
             appContext,
@@ -83,6 +82,7 @@ class MainModelView : ViewModel() {
     ) {
         cameraController.setImageView(cameraImageView)
         alertController.setAlertView(alertTextView)
+        serverIconController.setServerConnectionIcon(serverConnectionIcon)
         geofenceController.setGeofenceIcon(geofenceIcon)
         gateController.setGateButton(gateButton)        
     }
@@ -96,13 +96,17 @@ class MainModelView : ViewModel() {
     fun getDomoticzServiceManager() = domoticzAppService
     fun isInitialized(): Boolean = initialized
 
+    fun onWebSocketActiveListeners(active: Boolean)
+    {   
+        refreshView()
+    }
+
     fun refreshView()
     {   
         alertController.getAlerts()
         cameraController.loadNewImageFromCurrentCamera()
         serverIconController.updateServerConnectionIcon()
     }
-
 
     override fun onCleared() {
         super.onCleared()
