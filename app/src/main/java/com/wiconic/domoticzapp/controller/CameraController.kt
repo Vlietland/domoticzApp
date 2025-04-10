@@ -24,6 +24,7 @@ class CameraController(private val sendMessage: (String) -> Unit
 
     fun setImageView(newImageView: ImageView) {
         cameraImageView = newImageView
+        loadNewImageFromCurrentCamera()        
     }
 
     fun loadNextImage() {
@@ -82,6 +83,11 @@ class CameraController(private val sendMessage: (String) -> Unit
                 Log.e(TAG, "Failed to decode image: ${e.message}")
             }
         }
+    }
+
+    fun onWebSocketActiveListeners(active: Boolean)
+    {   
+        if (active) loadNewImageFromCurrentCamera()
     }
 
     private fun displayImageLoading() {

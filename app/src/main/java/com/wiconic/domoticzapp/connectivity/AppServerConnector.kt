@@ -92,6 +92,8 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
         return success
     }
 
+    fun isConnected() = isConnected
+
     private fun connect(serverUrl: String) {
         val request = Request.Builder().url(serverUrl).build()
         webSocket = client.newWebSocket(request, createWebSocketListener())

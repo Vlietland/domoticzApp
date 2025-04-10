@@ -45,16 +45,20 @@ class MainModelView : ViewModel() {
         appServerConnector = domoticzAppService.getAppServerConnector() 
         appPreferences = domoticzAppService.getAppPreferences()           
         geofence = Geofence(appPreferences)
+
         alertController = AlertController(appServerConnector::sendMessage)
+        appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)         
         notificationController = NotificationController(alertController::getAlerts)
+        
         cameraController = CameraController(appServerConnector::sendMessage)
+        appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)         
+
         gateController = GateController(appServerConnector::sendMessage)
         geofenceController = GeofenceController(gateController::openGate, appPreferences)
         geofence.setOnGeofenceStateChangeCallback(geofenceController::onIsWithinGeofenceCallback)  
 
-        serverIconController = ServerIconController()   
+        serverIconController = ServerIconController(appServerConnector)   
         appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)        
-        appServerConnector.addOnWebSocketActiveListener(this::onWebSocketActiveListeners) 
 
         preferenceObserver = PreferenceObserver(
             appContext,
@@ -95,18 +99,6 @@ class MainModelView : ViewModel() {
     fun getAppPreferences() = appPreferences
     fun getDomoticzServiceManager() = domoticzAppService
     fun isInitialized(): Boolean = initialized
-
-    fun onWebSocketActiveListeners(active: Boolean)
-    {   
-        refreshView()
-    }
-
-    fun refreshView()
-    {   
-        alertController.getAlerts()
-        cameraController.loadNewImageFromCurrentCamera()
-        serverIconController.updateServerConnectionIcon()
-    }
 
     override fun onCleared() {
         super.onCleared()

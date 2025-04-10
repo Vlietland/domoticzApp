@@ -26,6 +26,7 @@ class AlertController(private val sendMessage: (String) -> Unit) {
 
     fun setAlertView(newAlertTextView: TextView) {
         alertTextView = newAlertTextView
+        getAlerts()        
     }
 
     fun onAlerts(alerts: JSONArray) {
@@ -60,6 +61,11 @@ class AlertController(private val sendMessage: (String) -> Unit) {
         sendMessage(message)   
         alertCache.clear() 
         updateAlertView()
+    }
+
+    fun onWebSocketActiveListeners(active: Boolean)
+    {   
+        if (active) getAlerts()
     }
 
     private fun updateAlertView() {
