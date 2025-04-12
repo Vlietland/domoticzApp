@@ -3,12 +3,18 @@ package com.wiconic.domoticzapp.ui
 import android.os.Bundle
 import android.util.Log
 import android.content.Context
+import android.os.Build
+import android.app.NotificationManager
+import android.content.Intent
+import android.provider.Settings
 import android.widget.ImageView
+import androidx.appcompat.app.AlertDialog
 import android.widget.TextView
 import android.widget.Button
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wiconic.domoticzapp.connectivity.AppServerConnector
+import com.wiconic.domoticzapp.connectivity.SoundConnector
 import com.wiconic.domoticzapp.controller.AlertController
 import com.wiconic.domoticzapp.controller.CameraController
 import com.wiconic.domoticzapp.controller.GateController
@@ -36,11 +42,36 @@ class MainModelView : ViewModel() {
     private lateinit var notificationController: NotificationController
     private lateinit var domoticzAppService: DomoticzAppService
     private lateinit var appServerConnector: AppServerConnector
+    private lateinit var soundConnector: SoundConnector
     private lateinit var appContext: Context
     private var initialized = false    
 
+    fun checkAndRequestDndAccess(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val hasAccess = notificationManager.isNotificationPolicyAccessGranted
+
+            Log.d("DND", "Notification policy access = $hasAccess")
+
+            if (!hasAccess) {
+                AlertDialog.Builder(context)
+                    .setTitle("Permission Needed")
+                    .setMessage(
+                        "To play alerts while Do Not Disturb is on, please allow DomoticzApp to manage DND settings."
+                    )
+                    .setPositiveButton("Grant Access") { _, _ ->
+                        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                        context.startActivity(intent)
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
+        }
+    }
+
     fun initializeControllers(context: Context, service: DomoticzAppService) {
         appContext = context
+        soundConnector = SoundConnector(context)
         domoticzAppService = service
         appServerConnector = domoticzAppService.getAppServerConnector() 
         appPreferences = domoticzAppService.getAppPreferences()           
@@ -48,7 +79,8 @@ class MainModelView : ViewModel() {
 
         alertController = AlertController(appServerConnector::sendMessage)
         appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)         
-        notificationController = NotificationController(alertController::getAlerts)
+
+        notificationController = NotificationController(alertController::getAlerts, soundConnector::playNotification)
         
         cameraController = CameraController(appServerConnector::sendMessage)
         appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)         
