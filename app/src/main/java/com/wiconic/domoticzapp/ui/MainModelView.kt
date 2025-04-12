@@ -114,13 +114,14 @@ class MainModelView : ViewModel() {
         geofenceIcon: ImageView,
         serverConnectionIcon: ImageView,
         alertTextView: TextView,
-        gateButton: Button
+        openGateButton: Button,
+        closeGateButton: Button
     ) {
         cameraController.setImageView(cameraImageView)
         alertController.setAlertView(alertTextView)
         serverIconController.setServerConnectionIcon(serverConnectionIcon)
         geofenceController.setGeofenceIcon(geofenceIcon)
-        gateController.setGateButton(gateButton)        
+        gateController.setGateButtons(openGateButton, closeGateButton) 
     }
 
     fun getCameraController() = cameraController
@@ -131,6 +132,12 @@ class MainModelView : ViewModel() {
     fun getAppPreferences() = appPreferences
     fun getDomoticzServiceManager() = domoticzAppService
     fun isInitialized(): Boolean = initialized
+
+    fun closeGate() {
+        Log.d(TAG, "Close gate button pressed")
+        // Assuming GateController will have a closeGate method
+        gateController.closeGate() 
+    }
 
     override fun onCleared() {
         super.onCleared()

@@ -8,13 +8,20 @@ class GateController(
     ) {
     private val TAG = "GateController"
 
-    fun setGateButton(button: Button) {
-        button.setOnClickListener { openGate() }
+    fun setGateButtons(openButton: Button, closeButton: Button) {
+        openButton.setOnClickListener { openGate() }
+        closeButton.setOnClickListener { closeGate() }
     }
 
     fun openGate() {
         val message = "{\"type\": \"openGateCommand\"}"
         sendMessage(message)
         Log.d(TAG, "Gate open request sent.")
+    }
+
+    fun closeGate() {
+        val message = "{\"type\": \"closeGateCommand\"}"
+        sendMessage(message)
+        Log.d(TAG, "Gate close request sent.")
     }
 }

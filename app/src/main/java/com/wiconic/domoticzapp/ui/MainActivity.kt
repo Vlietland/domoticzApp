@@ -34,6 +34,7 @@
         private lateinit var cameraImageView: ImageView
         private lateinit var alertCardView: CardView
         private lateinit var openGateButton: Button
+        private lateinit var closeGateButton: Button
         private var domoticzAppService: DomoticzAppService? = null
         private var serviceBound = false
         
@@ -83,6 +84,7 @@
 
         private fun initializeUIComponents() {
             openGateButton = findViewById(R.id.button_open_gate)
+            closeGateButton = findViewById(R.id.button_close_gate)
             cameraImageView = findViewById(R.id.cameraImageView)
             alertTextView = findViewById(R.id.alertTextView)
             alertCardView = findViewById(R.id.alertCardView)        
@@ -96,7 +98,8 @@
                 geofenceIcon,
                 serverConnectionIcon,
                 alertTextView,
-                openGateButton
+                openGateButton,
+                closeGateButton
             )
             PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())        
@@ -120,6 +123,7 @@
             alertCardView.setOnTouchListener(alertSwipeController)
             
             openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
+            closeGateButton.setOnClickListener { mainModelView.closeGate() }
         }
 
         override fun onCreateOptionsMenu(menu: Menu): Boolean {

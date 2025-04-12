@@ -58,9 +58,9 @@
         app:cardElevation="16dp"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toTopOf="@id/button_open_gate"
-        app:layout_constraintEnd_toEndOf="@id/button_open_gate"
-        app:layout_constraintStart_toStartOf="@id/button_open_gate"
+        app:layout_constraintBottom_toTopOf="@id/gateButtonLayout"
+        app:layout_constraintEnd_toEndOf="@id/gateButtonLayout"
+        app:layout_constraintStart_toStartOf="@id/gateButtonLayout"
         app:layout_constraintTop_toBottomOf="@id/cameraImageView">
 
         <LinearLayout
@@ -93,17 +93,39 @@
 
     </androidx.cardview.widget.CardView>
 
-    <Button
-        android:id="@+id/button_open_gate"
+    <LinearLayout
+        android:id="@+id/gateButtonLayout"
         android:layout_width="0dp"
         android:layout_height="128dp"
-        android:layout_margin="16dp"
-        android:text="Open Gate"
-        android:textSize="18sp"
-        android:backgroundTint="@color/colorPrimaryDark"
-        android:textColor="@color/textPrimary"
+        android:orientation="horizontal"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent">
+
+        <Button
+            android:id="@+id/button_open_gate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="2"
+            android:layout_marginEnd="8dp"
+            android:text="Open Gate"
+            android:textSize="18sp"
+            android:backgroundTint="@color/colorPrimaryDark"
+            android:textColor="@color/textPrimary" />
+
+        <Button
+            android:id="@+id/button_close_gate"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginStart="8dp"
+            android:text="Close Gate"
+            android:textSize="18sp"
+            android:backgroundTint="@color/colorError"
+            android:textColor="@color/textPrimary" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
