@@ -1,16 +1,9 @@
 package com.wiconic.domoticzapp.service
 
-import android.app.Notification
-import android.app.NotificationChannel
-import android.app.NotificationManager
-//import android.os.Build
-import androidx.core.app.NotificationCompat
-import com.wiconic.domoticzapp.R
 import android.util.Log
 import org.json.JSONObject
 import org.json.JSONArray
 import android.content.Context
-import com.wiconic.domoticzapp.connectivity.SoundConnector
 
 class MessageHandler(private val context: Context) {
     private val TAG = "MessageHandler"

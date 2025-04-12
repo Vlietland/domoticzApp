@@ -1,6 +1,5 @@
 package com.wiconic.domoticzapp.ui
 
-import android.os.Bundle
 import android.util.Log
 import android.content.Context
 import android.os.Build
@@ -12,7 +11,6 @@ import androidx.appcompat.app.AlertDialog
 import android.widget.TextView
 import android.widget.Button
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.wiconic.domoticzapp.connectivity.AppServerConnector
 import com.wiconic.domoticzapp.connectivity.SoundConnector
 import com.wiconic.domoticzapp.controller.AlertController
@@ -26,8 +24,6 @@ import com.wiconic.domoticzapp.model.AppPreferences
 import com.wiconic.domoticzapp.model.Geofence
 import com.wiconic.domoticzapp.service.MessageHandler
 import com.wiconic.domoticzapp.service.DomoticzAppService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainModelView : ViewModel() {
     private val TAG = "MainModelView"      

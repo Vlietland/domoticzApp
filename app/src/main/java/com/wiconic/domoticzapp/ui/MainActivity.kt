@@ -1,10 +1,11 @@
     package com.wiconic.domoticzapp.ui
 
-    import android.media.RingtoneManager
     import android.content.ComponentName
     import android.content.Context
     import android.content.Intent
     import android.content.ServiceConnection
+    import android.content.res.Configuration
+    import android.os.Build
     import android.os.Bundle
     import android.os.IBinder
     import android.util.Log
@@ -16,6 +17,9 @@
     import androidx.appcompat.app.AppCompatActivity
     import androidx.appcompat.widget.Toolbar
     import androidx.cardview.widget.CardView
+    import androidx.core.view.WindowCompat
+    import androidx.core.view.WindowInsetsCompat
+    import androidx.core.view.WindowInsetsControllerCompat
     import androidx.lifecycle.ViewModelProvider
     import androidx.preference.PreferenceManager
     import com.wiconic.domoticzapp.R
@@ -46,7 +50,6 @@
                 serviceBound = true
                 onServiceCreatedCallback()
             }
-
             override fun onServiceDisconnected(arg0: ComponentName) {
                 serviceBound = false
                 Log.d(TAG, "Service disconnected in MainActivity")
@@ -58,13 +61,11 @@
             super.onCreate(savedInstanceState)
             setContentView(R.layout.activity_main)
             setSupportActionBar(findViewById<Toolbar>(R.id.toolbar))
-
             if (savedInstanceState == null) {
                 Log.d(TAG, "Starting DomoticzAppService")
                 val serviceIntent = Intent(this, DomoticzAppService::class.java)
                 startService(serviceIntent)
             }
-
             val bindIntent = Intent(this, DomoticzAppService::class.java)
             bindService(bindIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
@@ -93,13 +94,8 @@
         }
         
         private fun setupUIComponentsInViewModel() {
-            mainModelView.setupUIComponents(
-                cameraImageView,
-                geofenceIcon,
-                serverConnectionIcon,
-                alertTextView,
-                openGateButton,
-                closeGateButton
+            mainModelView.setupUIComponents(cameraImageView, geofenceIcon, serverConnectionIcon, alertTextView,
+                openGateButton, closeGateButton
             )
             PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())        
@@ -107,21 +103,10 @@
         
         private fun setupControllersAndListeners() {
             mainModelView.getAlertController().setAlertView(alertTextView)
-            
-            cameraSwipeController = CameraSwipeController(
-                this,
-                mainModelView.getCameraController(),
-                cameraImageView
-            )
+            cameraSwipeController = CameraSwipeController(this, mainModelView.getCameraController(), cameraImageView)
             cameraImageView.setOnTouchListener(cameraSwipeController)
-            
-            alertSwipeController = AlertSwipeController(
-                this,
-                alertCardView,
-                mainModelView.getAlertController()::purgeAlerts
-            )
+            alertSwipeController = AlertSwipeController(this, alertCardView, mainModelView.getAlertController()::purgeAlerts)
             alertCardView.setOnTouchListener(alertSwipeController)
-            
             openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
             closeGateButton.setOnClickListener { mainModelView.closeGate() }
         }
@@ -150,5 +135,23 @@
             }
             PreferenceManager.getDefaultSharedPreferences(this)
                 .unregisterOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())
+        }
+
+        override fun onWindowFocusChanged(hasFocus: Boolean) {
+            super.onWindowFocusChanged(hasFocus)
+            if (hasFocus) handleSystemUiVisibility()
+        }
+
+        private fun handleSystemUiVisibility() {
+            val windowInsetsController = WindowCompat.getInsetsController(window, window.decorView)
+            windowInsetsController.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                windowInsetsController.hide(WindowInsetsCompat.Type.systemBars())
+                supportActionBar?.hide()
+            } else {
+                windowInsetsController.show(WindowInsetsCompat.Type.systemBars())
+                supportActionBar?.show()
+            }
         }
     }
