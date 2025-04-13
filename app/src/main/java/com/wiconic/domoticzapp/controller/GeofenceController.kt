@@ -47,12 +47,19 @@ class GeofenceController(
         pollingJob = coroutineScope.launch {
             while (isActive) {
                 val location = locationConnector.getLastKnownLocation()
-                var hasLocation = (location != null)
-                Log.i(TAG, "Geofence location received: $location")                
+                hasLocation = (location != null)
+                Log.i(TAG, "Geofence location received: $location")             
                 location?.let {
                     geofence.updateLocation(it.latitude, it.longitude)
-                    updateGeofenceIcon()
-                    if (geofence.isWithinGeofence()) openGate()
+                    if (geofence.getFenceStatusChanged()) {
+                        updateGeofenceIcon()                        
+                        if (geofence.getIsWithinGeofence()) {
+                            Log.i(TAG, "Sending gate open command")                                    
+                            //if (geofence.isWithinGeofence()) openGate()
+                        }
+                        geofence.resetFenceStatusChanged()                        
+                    }
+
                 }
                 delay(5000)
             }
@@ -66,9 +73,10 @@ class GeofenceController(
     private fun updateGeofenceIcon() {
         val icon = when {
             !hasLocation -> ICON_LOCATION_UNAVAILABLE
-            geofence.isTriggered -> ICON_INSIDE_GEOFENCE
+            geofence.getIsWithinGeofence() -> ICON_INSIDE_GEOFENCE
             else -> ICON_OUTSIDE_GEOFENCE
         }
+        Log.d(TAG, "Updating geofence icon to: $icon")
         val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
         geofenceIcon?.setImageResource(icon)
         geofenceIcon?.visibility = visibility

@@ -8,14 +8,10 @@ class Geofence(
     private var geofenceCenterLon: Double = appPreferences.getGeofenceCenterLon()
     private var geofenceRadius: Int = appPreferences.getGeofenceRadius()
     private var measurementsBeforeTrigger: Int = appPreferences.getMeasurementsBeforeTrigger()
-    private var onGeofenceStateChangeCallback: ((Boolean) -> Unit)? = null
     private var lastDistance: Float = Float.MAX_VALUE
-
-    var isTriggered = false
-        private set
-
-    var hasLeftArea = true
-        private set
+    private var fenceStatusChanged: Boolean = false
+    private var withinGeofence: Boolean = true
+    private var testDistanceCounter = 0     // testing
 
     private var consecutiveInAreaCount = 0
 
@@ -28,30 +24,25 @@ class Geofence(
 
     fun updateLocation(lat: Double, lon: Double) {
         lastDistance = calculateDistance(lat, lon, geofenceCenterLat, geofenceCenterLon)
-        val isInArea = lastDistance <= geofenceRadius.toFloat()
-
-        if (isInArea) {
-            if (++consecutiveInAreaCount >= measurementsBeforeTrigger && !isTriggered && hasLeftArea) {
-                isTriggered = true
-                hasLeftArea = false
-                onGeofenceStateChangeCallback?.invoke(true)
+        val checkInArea = lastDistance <= geofenceRadius.toFloat()
+        if (withinGeofence != checkInArea) {
+            if (++consecutiveInAreaCount >= measurementsBeforeTrigger) {
+                fenceStatusChanged = true
+                withinGeofence = checkInArea
             }
-        } else {
-            consecutiveInAreaCount = 0
-            if (isTriggered) hasLeftArea = true
-            onGeofenceStateChangeCallback?.invoke(false)
         }
+        else consecutiveInAreaCount = 0
     }
 
-    fun getDistanceFromGeofence(): Float {
-        return lastDistance
-    }
-
-    fun isWithinGeofence(): Boolean {
-        return isTriggered
-    }
+    fun getDistanceFromGeofence() = lastDistance
+    fun getIsWithinGeofence() = withinGeofence
+    fun getFenceStatusChanged() = fenceStatusChanged
+    fun resetFenceStatusChanged() {fenceStatusChanged = false}
 
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        //testDistanceCounter++
+        //val cyclePosition = (testDistanceCounter - 1) % 10
+        //return if (cyclePosition < 5) 500f else 0f
         val results = FloatArray(1)
         android.location.Location.distanceBetween(lat1, lon1, lat2, lon2, results)
         return results[0]
