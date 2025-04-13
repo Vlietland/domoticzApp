@@ -97,8 +97,9 @@ class MainModelView : ViewModel() {
             appContext,
             appPreferences = appPreferences,
             initializeConnection = appServerConnector::initializeConnection,
-            initializeGeofence = geofenceController::startGeofenceMonitoring,
-            stopGeofence = geofenceController::stopGeofenceMonitoring
+            startGeofenceMonitoring = geofenceController::startGeofenceMonitoring,
+            restartGeofenceMonitoring = geofenceController::restartGeofenceMonitoring,
+            stopGeofenceMonitoring = geofenceController::stopGeofenceMonitoring
         ) 
         initialized = true        
     }

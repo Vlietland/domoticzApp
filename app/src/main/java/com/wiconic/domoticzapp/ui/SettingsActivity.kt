@@ -34,7 +34,7 @@ class SettingsActivity : AppCompatActivity() {
             setupPreference("geofence_radius", appPreferences.getGeofenceRadius().toString())
             setupPreference("minimum_polling_delay", appPreferences.getMinPollingDelay().toString())
             setupPreference("maximum_polling_delay", appPreferences.getMaxPollingDelay().toString())            
-            setupPreference("measurements_before_trigger", appPreferences.getMeasurementsBeforeTrigger().toString())
+            setupPreference("accuracy_threshold", appPreferences.getAccuracyThreshold().toString())
         }
 
         private fun setupPreference(key: String, defaultValue: String) {

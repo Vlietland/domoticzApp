@@ -16,7 +16,7 @@ class AppPreferences(private val context: Context) {
         const val KEY_GEOFENCE_CENTER_LON = "geofence_lon"
         const val KEY_MIN_POLLING_DELAY = "minimum_polling_delay"
         const val KEY_MAX_POLLING_DELAY = "maximum_polling_delay"
-        const val KEY_MEASUREMENTS = "measurements_before_trigger"
+        const val KEY_ACCURACY_THRESHOLD = "accuracy_threshold"
         const val KEY_GEOFENCE_TRIGGER_OPEN_ENABLED = "geofence_trigger_open_enabled"
         const val KEY_GEOFENCE_TRIGGER_CLOSE_ENABLED = "geofence_trigger_close_enabled"
 
@@ -27,7 +27,7 @@ class AppPreferences(private val context: Context) {
         const val DEFAULT_CENTER_LON = 4.899431
         const val DEFAULT_MIN_POLLING_DELAY = 60L
         const val DEFAULT_MAX_POLLING_DELAY = 1800L
-        const val DEFAULT_MEASUREMENTS_BEFORE_TRIGGER = 3
+        const val DEFAULT_ACCURACY_THRESHOLD = 3
         const val DEFAULT_GEOFENCE_TRIGGER_OPEN_ENABLED = false
         const val DEFAULT_GEOFENCE_TRIGGER_CLOSE_ENABLED = false
     }
@@ -100,13 +100,13 @@ class AppPreferences(private val context: Context) {
         sharedPreferences.edit().putString(KEY_MAX_POLLING_DELAY, value.toString()).apply()
     }
 
-    fun getMeasurementsBeforeTrigger(): Int {
-        val stringValue = sharedPreferences.getString(KEY_MEASUREMENTS, DEFAULT_MEASUREMENTS_BEFORE_TRIGGER.toString())
-        return stringValue?.toIntOrNull() ?: DEFAULT_MEASUREMENTS_BEFORE_TRIGGER
+    fun getAccuracyThreshold(): Int {
+        val stringValue = sharedPreferences.getString(KEY_ACCURACY_THRESHOLD, DEFAULT_ACCURACY_THRESHOLD.toString())
+        return stringValue?.toIntOrNull() ?: DEFAULT_ACCURACY_THRESHOLD
     }
 
-    fun setMeasurementsBeforeTrigger(value: Int) {
-        sharedPreferences.edit().putString(KEY_MEASUREMENTS, value.toString()).apply()
+    fun setAccuracyThreshold(value: Int) {
+        sharedPreferences.edit().putString(KEY_ACCURACY_THRESHOLD, value.toString()).apply()
     }
 
     fun getGeofenceTriggerOpenEnabled(): Boolean =

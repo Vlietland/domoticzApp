@@ -12,8 +12,9 @@ class PreferenceObserver(
     private val context: Context,
     private val appPreferences: AppPreferences,
     private val initializeConnection: () -> Unit,    
-    private val initializeGeofence: () -> Unit,
-    private val stopGeofence: () -> Unit,
+    private val startGeofenceMonitoring: () -> Unit,
+    private val restartGeofenceMonitoring: () -> Unit,    
+    private val stopGeofenceMonitoring: () -> Unit,
 ) : SharedPreferences.OnSharedPreferenceChangeListener, DefaultLifecycleObserver {
 
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
@@ -46,11 +47,11 @@ class PreferenceObserver(
 
             AppPreferences.KEY_GEOFENCE_ENABLED -> {
                 if (appPreferences.getGeofenceEnabled()) {
-                    initializeGeofence()                    
+                    startGeofenceMonitoring()                    
                     Log.i(TAG, "Geofence enabled. Starting monitoring.")
                 } else {
                     Log.i(TAG, "Geofence disabled. Stopping monitoring.")
-                    stopGeofence()
+                    stopGeofenceMonitoring()
                 }
             }
 
@@ -58,9 +59,11 @@ class PreferenceObserver(
             AppPreferences.KEY_GEOFENCE_CENTER_LAT,
             AppPreferences.KEY_GEOFENCE_CENTER_LON,
             AppPreferences.KEY_MIN_POLLING_DELAY,
-            AppPreferences.KEY_MAX_POLLING_DELAY -> {
+            AppPreferences.KEY_MAX_POLLING_DELAY,
+            AppPreferences.KEY_ACCURACY_THRESHOLD,
+             -> {
                 Log.i(TAG, "Geofence configuration changed. Reinitializing geofence.")
-                initializeGeofence()
+                restartGeofenceMonitoring()
             }
 
             else -> Log.w(TAG, "Unknown preference key changed: $key")

@@ -68,9 +68,9 @@
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="measurements_before_trigger"
-            android:title="@string/measurements_before_trigger_title"
-            android:summary="@string/measurements_before_trigger_summary"
+            android:key="accuracy_threshold"
+            android:title="@string/accuracy_threshold_title"
+            android:summary="@string/accuracy_threshold_summary"
             android:inputType="number"
             app:iconSpaceReserved="false" />
     </PreferenceCategory>
