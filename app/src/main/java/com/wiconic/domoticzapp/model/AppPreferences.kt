@@ -14,18 +14,22 @@ class AppPreferences(private val context: Context) {
         const val KEY_GEOFENCE_RADIUS = "geofence_radius"
         const val KEY_GEOFENCE_CENTER_LAT = "geofence_lat"
         const val KEY_GEOFENCE_CENTER_LON = "geofence_lon"
-        const val KEY_MIN_POLLING_FREQUENCY = "minimum_polling_frequency"
-        const val KEY_MAX_POLLING_FREQUENCY = "maximum_polling_frequency"
+        const val KEY_MIN_POLLING_DELAY = "minimum_polling_delay"
+        const val KEY_MAX_POLLING_DELAY = "maximum_polling_delay"
         const val KEY_MEASUREMENTS = "measurements_before_trigger"
+        const val KEY_GEOFENCE_TRIGGER_OPEN_ENABLED = "geofence_trigger_open_enabled"
+        const val KEY_GEOFENCE_TRIGGER_CLOSE_ENABLED = "geofence_trigger_close_enabled"
 
         const val DEFAULT_SERVER_IP_ADDRESS = "192.168.0.1"
         const val DEFAULT_SERVER_PORT = 8080
         const val DEFAULT_GEOFENCE_RADIUS = 100
-        const val DEFAULT_CENTER_LAT = 12.379189
-        const val DEFAULT_CENTER_LON = 44.899431
-        const val DEFAULT_MIN_POLLING_FREQUENCY = 60L       
-        const val DEFAULT_MAX_POLLING_FREQUENCY = 1800L
+        const val DEFAULT_CENTER_LAT = 52.379189
+        const val DEFAULT_CENTER_LON = 4.899431
+        const val DEFAULT_MIN_POLLING_DELAY = 60L
+        const val DEFAULT_MAX_POLLING_DELAY = 1800L
         const val DEFAULT_MEASUREMENTS_BEFORE_TRIGGER = 3
+        const val DEFAULT_GEOFENCE_TRIGGER_OPEN_ENABLED = false
+        const val DEFAULT_GEOFENCE_TRIGGER_CLOSE_ENABLED = false
     }
 
     fun getServerIpAddress(): String =
@@ -78,22 +82,22 @@ class AppPreferences(private val context: Context) {
         sharedPreferences.edit().putString(KEY_GEOFENCE_CENTER_LON, value.toString()).apply()
     }
 
-    fun getMinPollingFrequency(): Long {
-        val stringValue = sharedPreferences.getString(KEY_MIN_POLLING_FREQUENCY, DEFAULT_MIN_POLLING_FREQUENCY.toString())
-        return stringValue?.toLongOrNull() ?: DEFAULT_MIN_POLLING_FREQUENCY
+    fun getMinPollingDelay(): Long {
+        val stringValue = sharedPreferences.getString(KEY_MIN_POLLING_DELAY, DEFAULT_MIN_POLLING_DELAY.toString())
+        return stringValue?.toLongOrNull() ?: DEFAULT_MIN_POLLING_DELAY
     }
 
-    fun setMinPollingFrequency(value: Long) {
-        sharedPreferences.edit().putString(KEY_MIN_POLLING_FREQUENCY, value.toString()).apply()
+    fun setMinPollingDelay(value: Long) {
+        sharedPreferences.edit().putString(KEY_MIN_POLLING_DELAY, value.toString()).apply()
     }
 
-    fun getMaxPollingFrequency(): Long {
-        val stringValue = sharedPreferences.getString(KEY_MAX_POLLING_FREQUENCY, DEFAULT_MAX_POLLING_FREQUENCY.toString())
-        return stringValue?.toLongOrNull() ?: DEFAULT_MAX_POLLING_FREQUENCY
+    fun getMaxPollingDelay(): Long {
+        val stringValue = sharedPreferences.getString(KEY_MAX_POLLING_DELAY, DEFAULT_MAX_POLLING_DELAY.toString())
+        return stringValue?.toLongOrNull() ?: DEFAULT_MAX_POLLING_DELAY
     }
 
-    fun setMaxPollingFrequency(value: Long) {
-        sharedPreferences.edit().putString(KEY_MAX_POLLING_FREQUENCY, value.toString()).apply()
+    fun setMaxPollingDelay(value: Long) {
+        sharedPreferences.edit().putString(KEY_MAX_POLLING_DELAY, value.toString()).apply()
     }
 
     fun getMeasurementsBeforeTrigger(): Int {
@@ -103,6 +107,20 @@ class AppPreferences(private val context: Context) {
 
     fun setMeasurementsBeforeTrigger(value: Int) {
         sharedPreferences.edit().putString(KEY_MEASUREMENTS, value.toString()).apply()
+    }
+
+    fun getGeofenceTriggerOpenEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_GEOFENCE_TRIGGER_OPEN_ENABLED, DEFAULT_GEOFENCE_TRIGGER_OPEN_ENABLED)
+
+    fun setGeofenceTriggerOpenEnabled(value: Boolean) {
+        sharedPreferences.edit().putBoolean(KEY_GEOFENCE_TRIGGER_OPEN_ENABLED, value).apply()
+    }
+
+    fun getGeofenceTriggerCloseEnabled(): Boolean =
+        sharedPreferences.getBoolean(KEY_GEOFENCE_TRIGGER_CLOSE_ENABLED, DEFAULT_GEOFENCE_TRIGGER_CLOSE_ENABLED)
+
+    fun setGeofenceTriggerCloseEnabled(value: Boolean) {
+        sharedPreferences.edit().putBoolean(KEY_GEOFENCE_TRIGGER_CLOSE_ENABLED, value).apply()
     }
 
     fun getWebSocketUrl(): String =

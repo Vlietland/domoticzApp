@@ -54,16 +54,16 @@
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="minimum_polling_frequency"
-            android:title="@string/polling_frequency_title"
-            android:summary="@string/polling_frequency_summary"
+            android:key="minimum_polling_delay"
+            android:title="@string/minimum_polling_delay_title"
+            android:summary="@string/minimum_polling_delay_summary"
             android:inputType="number"
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="maximum_polling_frequency"
-            android:title="@string/polling_frequency_title"
-            android:summary="@string/polling_frequency_summary"
+            android:key="maximum_polling_delay"
+            android:title="@string/maximum_polling_delay_title"
+            android:summary="@string/maximum_polling_delay_summary"
             android:inputType="number"
             app:iconSpaceReserved="false" />
 

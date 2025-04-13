@@ -21,11 +21,17 @@
     <string name="geofence_lon_summary">Enter longitude (e.g., 4.9041 for Amsterdam)</string>
     <string name="geofence_radius_title">Radius (meters)</string>
     <string name="geofence_radius_summary">Enter radius in meters (e.g., 100 for 100m radius)</string>
-    <string name="polling_frequency_title">Polling Frequency in seconds</string>
-    <string name="polling_frequency_summary">How often to check location in milliseconds (e.g., 60000 for 1 minute)</string>
+    <string name="minimum_polling_delay_title">Minimum polling delay in seconds</string>
+    <string name="minimum_polling_delay_summary">Minimum delay between location checks in seconds (e.g., 60 for 1 minute)</string>
+    <string name="maximum_polling_delay_title">Maximum polling frequency in seconds</string>
+    <string name="maximum_polling_delay_summary">Maximum delay between location checks in seconds (e.g., 60 for 1 minute)</string>
     <string name="measurements_before_trigger_title">Measurements Before Trigger</string>
     <string name="measurements_before_trigger_summary">Number of measurements needed before triggering (e.g., 3 for better accuracy)</string>
-    
+    <string name="geofence_trigger_open_title">Enable Trigger Open</string>
+    <string name="geofence_trigger_open_summary">Automatically open the gate when entering the geofence</string>
+    <string name="geofence_trigger_close_title">Enable Trigger Close</string>
+    <string name="geofence_trigger_close_summary">Automatically close the gate when leaving the geofence</string>
+
     <!-- Status Messages -->
     <string name="geofence_active">Geofence Active</string>
     <string name="geofence_inactive">Geofence Inactive</string>

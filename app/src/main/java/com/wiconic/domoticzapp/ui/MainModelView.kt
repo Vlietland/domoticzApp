@@ -52,7 +52,7 @@ class MainModelView : ViewModel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val hasAccess = notificationManager.isNotificationPolicyAccessGranted
-            Log.d("DND", "Notification policy access = $hasAccess")
+            Log.d(TAG, "Notification policy access = $hasAccess")
             if (!hasAccess) {
                 AlertDialog.Builder(context)
                     .setTitle("Permission Needed")
@@ -85,7 +85,8 @@ class MainModelView : ViewModel() {
         alertController = AlertController(appServerConnector::sendMessage)
         notificationController = NotificationController(alertController::getAlerts, soundConnector::playNotification)
 
-        geofenceController = GeofenceController(gateController::openGate, locationConnector, geofence, appPreferences)
+        geofenceController = GeofenceController(gateController::openGate, gateController::closeGate,
+                                                locationConnector, geofence, appPreferences)
 
         appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
         appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)         

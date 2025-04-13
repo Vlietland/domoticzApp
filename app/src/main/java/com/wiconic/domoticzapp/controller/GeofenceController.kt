@@ -12,18 +12,19 @@ import kotlinx.coroutines.*
 
 class GeofenceController(
     private val openGate: () -> Unit,
+    private val closeGate: () -> Unit,    
     private val locationConnector: LocationConnector,
     private val geofence: Geofence,
     private val appPreferences: AppPreferences,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) {
     private var geofenceIcon: ImageView? = null
-    private val TAG = "GeofenceController"
     private val ICON_INSIDE_GEOFENCE = R.drawable.ic_geofence_within_fence
     private val ICON_OUTSIDE_GEOFENCE = R.drawable.ic_geofence_outside_fence
     private val ICON_LOCATION_UNAVAILABLE = R.drawable.ic_geofence_location_unavailable
     private var pollingJob: Job? = null
     private var hasLocation: Boolean = false
+    private val TAG = "GeofenceController"
 
     fun setGeofenceIcon(icon: ImageView) {
         geofenceIcon = icon
@@ -52,17 +53,24 @@ class GeofenceController(
                 location?.let {
                     geofence.updateLocation(it.latitude, it.longitude)
                     if (geofence.getFenceStatusChanged()) {
+                        processGateCommand()
                         updateGeofenceIcon()                        
-                        if (geofence.getIsWithinGeofence()) {
-                            Log.i(TAG, "Sending gate open command")                                    
-                            //if (geofence.isWithinGeofence()) openGate()
-                        }
                         geofence.resetFenceStatusChanged()                        
                     }
-
                 }
-                delay(5000)
+                delay(geofence.newDelay())
             }
+        }
+    }
+
+    private fun processGateCommand() {
+        if (geofence.getIsWithinGeofence() && appPreferences.getGeofenceTriggerOpenEnabled()) {
+            Log.i(TAG, "Sending gate open command")                                     
+            openGate()
+        }
+        else if (!geofence.getIsWithinGeofence() && appPreferences.getGeofenceTriggerCloseEnabled()) {
+            Log.i(TAG, "Sending gate close command")                                     
+            closeGate() 
         }
     }
 

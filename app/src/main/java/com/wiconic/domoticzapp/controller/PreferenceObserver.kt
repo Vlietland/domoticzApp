@@ -57,8 +57,8 @@ class PreferenceObserver(
             AppPreferences.KEY_GEOFENCE_RADIUS,
             AppPreferences.KEY_GEOFENCE_CENTER_LAT,
             AppPreferences.KEY_GEOFENCE_CENTER_LON,
-            AppPreferences.KEY_MIN_POLLING_FREQUENCY,
-            AppPreferences.KEY_MAX_POLLING_FREQUENCY -> {
+            AppPreferences.KEY_MIN_POLLING_DELAY,
+            AppPreferences.KEY_MAX_POLLING_DELAY -> {
                 Log.i(TAG, "Geofence configuration changed. Reinitializing geofence.")
                 initializeGeofence()
             }
