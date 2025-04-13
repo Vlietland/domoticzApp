@@ -10,7 +10,6 @@ class ServerIconController(appServerConnector: AppServerConnector) {
     private val TAG = "ServerIconController"  
     private var isConnected = appServerConnector.isConnected()
     private var serverConnectionIcon: ImageView? = null    
-//    private var appServerConnector: AppServerConnector? = null
     private val ICON_CONNECTED = R.drawable.ic_server_connection_active
     private val ICON_DISCONNECTED = R.drawable.ic_server_connection_deactive
 

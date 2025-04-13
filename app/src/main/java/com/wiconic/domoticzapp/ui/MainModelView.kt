@@ -7,6 +7,7 @@ import android.app.NotificationManager
 import android.content.Intent
 import android.provider.Settings
 import android.widget.ImageView
+import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import android.widget.TextView
 import android.widget.Button
@@ -20,6 +21,7 @@ import com.wiconic.domoticzapp.controller.GeofenceController
 import com.wiconic.domoticzapp.controller.NotificationController
 import com.wiconic.domoticzapp.controller.PreferenceObserver
 import com.wiconic.domoticzapp.controller.ServerIconController
+import com.wiconic.domoticzapp.controller.WeatherController
 import com.wiconic.domoticzapp.model.AppPreferences
 import com.wiconic.domoticzapp.model.Geofence
 import com.wiconic.domoticzapp.service.MessageHandler
@@ -33,6 +35,7 @@ class MainModelView : ViewModel() {
     private lateinit var cameraController: CameraController
     private lateinit var alertController: AlertController
     private lateinit var serverIconController: ServerIconController
+    private lateinit var weatherController: WeatherController    
     private lateinit var preferenceObserver: PreferenceObserver
     private lateinit var geofence: Geofence
     private lateinit var notificationController: NotificationController
@@ -40,7 +43,8 @@ class MainModelView : ViewModel() {
     private lateinit var appServerConnector: AppServerConnector
     private lateinit var soundConnector: SoundConnector
     private lateinit var appContext: Context
-    private var initialized = false    
+    private lateinit var temperatureTextView: TextView
+    private var initialized = false
 
     fun checkAndRequestDndAccess(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -86,7 +90,9 @@ class MainModelView : ViewModel() {
         geofence.setOnGeofenceStateChangeCallback(geofenceController::onIsWithinGeofenceCallback)  
 
         serverIconController = ServerIconController(appServerConnector)   
-        appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)        
+        appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
+
+        weatherController = WeatherController(appServerConnector::sendMessage)   
 
         preferenceObserver = PreferenceObserver(
             appContext,
@@ -103,21 +109,25 @@ class MainModelView : ViewModel() {
         messageHandler.setOnAlerts(alertController::onAlerts)
         messageHandler.setOnSetCurrentCamera(cameraController::setCurrentCamera)
         messageHandler.setOnImage(cameraController::onImage)
+        messageHandler.setOnWeather(weatherController::onWeatherDataReceived)        
     }
 
     fun setupUIComponents(
         cameraImageView: ImageView,
         geofenceIcon: ImageView,
         serverConnectionIcon: ImageView,
+        temperatureTextView: TextView,
         alertTextView: TextView,
         openGateButton: Button,
-        closeGateButton: Button
+        closeGateButton: Button,
+        cameraProgressBar: ProgressBar
     ) {
-        cameraController.setImageView(cameraImageView)
+        cameraController.setImageViewAndProgress(cameraImageView, cameraProgressBar) 
         alertController.setAlertView(alertTextView)
         serverIconController.setServerConnectionIcon(serverConnectionIcon)
         geofenceController.setGeofenceIcon(geofenceIcon)
-        gateController.setGateButtons(openGateButton, closeGateButton) 
+        gateController.setGateButtons(openGateButton, closeGateButton)
+        weatherController.setTemperatureView(temperatureTextView)
     }
 
     fun getCameraController() = cameraController
@@ -128,12 +138,6 @@ class MainModelView : ViewModel() {
     fun getAppPreferences() = appPreferences
     fun getDomoticzServiceManager() = domoticzAppService
     fun isInitialized(): Boolean = initialized
-
-    fun closeGate() {
-        Log.d(TAG, "Close gate button pressed")
-        // Assuming GateController will have a closeGate method
-        gateController.closeGate() 
-    }
 
     override fun onCleared() {
         super.onCleared()

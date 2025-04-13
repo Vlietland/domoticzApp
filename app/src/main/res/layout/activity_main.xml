@@ -16,6 +16,15 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
         <ImageView
+            android:id="@+id/serverConnectionIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_server_connection_deactive"
+            android:contentDescription="Server Connection Status" />            
+
+        <ImageView
             android:id="@+id/geofenceIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,14 +33,15 @@
             android:src="@drawable/ic_baseline_location_off"
             android:contentDescription="Geofence Status" />
 
-        <ImageView
-            android:id="@+id/serverConnectionIcon"
+       <TextView
+            android:id="@+id/temperatureTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginStart="16dp"
-            android:src="@drawable/ic_server_connection_deactive"
-            android:contentDescription="Server Connection Status" />
+            android:text="--°C"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <ImageView
@@ -46,6 +56,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <ProgressBar
+        android:id="@+id/cameraProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminateTint="@color/progressColor"                
+        app:layout_constraintTop_toTopOf="@id/cameraImageView"
+        app:layout_constraintBottom_toBottomOf="@id/cameraImageView"
+        app:layout_constraintStart_toStartOf="@id/cameraImageView"
+        app:layout_constraintEnd_toEndOf="@id/cameraImageView" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/alertCardView"
@@ -80,7 +102,6 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <!-- Notification Message TextView -->
             <TextView
                 android:id="@+id/alertTextView"
                 android:layout_width="match_parent"

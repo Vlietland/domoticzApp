@@ -13,6 +13,7 @@
     import android.view.MenuItem
     import android.widget.Button
     import android.widget.ImageView
+    import android.widget.ProgressBar
     import android.widget.TextView
     import androidx.appcompat.app.AppCompatActivity
     import androidx.appcompat.widget.Toolbar
@@ -33,12 +34,14 @@
         private lateinit var cameraSwipeController: CameraSwipeController
         private lateinit var alertSwipeController: AlertSwipeController
         private lateinit var geofenceIcon: ImageView
-        private lateinit var serverConnectionIcon: ImageView    
+        private lateinit var serverConnectionIcon: ImageView
+        private lateinit var temperatureTextView: TextView
         private lateinit var alertTextView: TextView
         private lateinit var cameraImageView: ImageView
         private lateinit var alertCardView: CardView
         private lateinit var openGateButton: Button
         private lateinit var closeGateButton: Button
+        private lateinit var cameraProgressBar: ProgressBar
         private var domoticzAppService: DomoticzAppService? = null
         private var serviceBound = false
         
@@ -88,14 +91,16 @@
             closeGateButton = findViewById(R.id.button_close_gate)
             cameraImageView = findViewById(R.id.cameraImageView)
             alertTextView = findViewById(R.id.alertTextView)
-            alertCardView = findViewById(R.id.alertCardView)        
+            alertCardView = findViewById(R.id.alertCardView)
+            cameraProgressBar = findViewById(R.id.cameraProgressBar)
             geofenceIcon = findViewById(R.id.geofenceIcon)
             serverConnectionIcon = findViewById(R.id.serverConnectionIcon)
+            temperatureTextView = findViewById(R.id.temperatureTextView)
         }
         
         private fun setupUIComponentsInViewModel() {
-            mainModelView.setupUIComponents(cameraImageView, geofenceIcon, serverConnectionIcon, alertTextView,
-                openGateButton, closeGateButton
+            mainModelView.setupUIComponents(cameraImageView, geofenceIcon, serverConnectionIcon, temperatureTextView, alertTextView,
+                openGateButton, closeGateButton, cameraProgressBar
             )
             PreferenceManager.getDefaultSharedPreferences(this)
                 .registerOnSharedPreferenceChangeListener(mainModelView.getPreferenceObserver())        
@@ -108,7 +113,7 @@
             alertSwipeController = AlertSwipeController(this, alertCardView, mainModelView.getAlertController()::purgeAlerts)
             alertCardView.setOnTouchListener(alertSwipeController)
             openGateButton.setOnClickListener { mainModelView.getGateController().openGate() }
-            closeGateButton.setOnClickListener { mainModelView.closeGate() }
+            closeGateButton.setOnClickListener { mainModelView.getGateController().closeGate() }
         }
 
         override fun onCreateOptionsMenu(menu: Menu): Boolean {

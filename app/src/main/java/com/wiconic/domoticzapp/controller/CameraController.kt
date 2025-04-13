@@ -3,7 +3,9 @@ package com.wiconic.domoticzapp.controller
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.os.Handler
 import android.os.Looper
 import kotlinx.coroutines.CoroutineScope
@@ -14,6 +16,7 @@ import com.wiconic.domoticzapp.BuildConfig
 class CameraController(private val sendMessage: (String) -> Unit
     ) {
     private var cameraImageView: ImageView? = null
+    private var cameraProgressBar: ProgressBar? = null
     private var currentCameraIndex = 1
     private var maxCameras = BuildConfig.MAX_CAMERAS
     private val TAG = "CameraController"        
@@ -22,9 +25,10 @@ class CameraController(private val sendMessage: (String) -> Unit
         Log.d(TAG, "CameraController initialized with ${maxCameras} cameras.")
     }
 
-    fun setImageView(newImageView: ImageView) {
+    fun setImageViewAndProgress(newImageView: ImageView, newProgressBar: ProgressBar) {
         cameraImageView = newImageView
-        loadNewImageFromCurrentCamera()        
+        cameraProgressBar = newProgressBar
+        loadNewImageFromCurrentCamera()
     }
 
     fun loadNextImage() {
@@ -72,7 +76,9 @@ class CameraController(private val sendMessage: (String) -> Unit
                 val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
                 if (bitmap != null) {
                     Log.d(TAG, "Bitmap successfully decoded.")
-                    launch(Dispatchers.Main) {  
+                    launch(Dispatchers.Main) {
+                        cameraProgressBar?.visibility = View.GONE
+                        cameraImageView?.visibility = View.VISIBLE
                         cameraImageView?.setImageBitmap(bitmap)
                         Log.d(TAG, "Bitmap successfully displayed on ImageView.")
                     }
@@ -92,5 +98,8 @@ class CameraController(private val sendMessage: (String) -> Unit
 
     private fun displayImageLoading() {
         Log.d(TAG, "Image loading started.")
+        Handler(Looper.getMainLooper()).post {
+            cameraProgressBar?.visibility = View.VISIBLE
+        }
     }
 }

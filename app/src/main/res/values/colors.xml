@@ -17,4 +17,6 @@
     <!-- Button colors -->
     <color name="buttonBackground">#1A78CC</color>    
     <color name="buttonText">#FFFFFF</color>
+
+    <color name="progressColor">#FFFFFF</color>    
 </resources>

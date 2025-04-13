@@ -17,15 +17,6 @@
         android:visibility="gone">>        
 
         <ImageView
-            android:id="@+id/geofenceIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|center_vertical"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_baseline_location_off"
-            android:contentDescription="Geofence Status" />
-
-        <ImageView
             android:id="@+id/serverConnectionIcon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,6 +24,25 @@
             android:layout_marginStart="16dp"
             android:src="@drawable/ic_server_connection_deactive"
             android:contentDescription="Server Connection Status" />            
+
+        <ImageView
+            android:id="@+id/geofenceIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_baseline_location_off"
+            android:contentDescription="Geofence Status" />
+
+       <TextView
+            android:id="@+id/temperatureTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:layout_marginStart="16dp"
+            android:text="--°C"
+            android:textColor="@android:color/white"
+            android:textSize="16sp" />
     </androidx.appcompat.widget.Toolbar>
 
     <ImageView
@@ -43,6 +53,18 @@
         android:scaleType="centerCrop"
         android:clickable="true"
         android:focusable="true" />
+
+    <ProgressBar
+        android:id="@+id/cameraProgressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:indeterminateTint="@color/progressColor"        
+        app:layout_constraintTop_toTopOf="@id/cameraImageView"
+        app:layout_constraintBottom_toBottomOf="@id/cameraImageView"
+        app:layout_constraintStart_toStartOf="@id/cameraImageView"
+        app:layout_constraintEnd_toEndOf="@id/cameraImageView" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/alertCardView"
