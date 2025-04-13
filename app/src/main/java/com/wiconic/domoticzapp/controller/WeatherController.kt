@@ -2,6 +2,10 @@ package com.wiconic.domoticzapp.controller
 
 import android.util.Log
 import android.widget.TextView
+import kotlin.math.roundToInt
+import android.os.Handler
+import android.os.Looper
+
 
 class WeatherController(private val sendMessage: (String) -> Unit) {
     private val TAG = "WeatherController"
@@ -15,14 +19,19 @@ class WeatherController(private val sendMessage: (String) -> Unit) {
 
     fun onWeatherDataReceived(temp: String) {
         Log.d(TAG, "Processed weather data: $temp")
-        if (temp.isNotEmpty()) {
-            temperature = temp.toInt()
+        val value = temp.toDoubleOrNull()
+        if (value != null) {
+            temperature = value.roundToInt()
             updateTempView()
             Log.d(TAG, "Retrieved and published weatherdata")
+        } else {
+            Log.d(TAG, "No valid weather data available")
         }
-        else {
-            Log.d(TAG, "No weatherdata available")        
-        }
+    }
+
+    fun onWebSocketActiveListeners(active: Boolean)
+    {   
+        if (active) getWeather()
     }
 
     fun getWeather() {
@@ -32,6 +41,11 @@ class WeatherController(private val sendMessage: (String) -> Unit) {
     }
 
     private fun updateTempView() {
-        temperatureView?.text = "$temperature°C"
+        val tempString = "$temperature°"
+        Log.d(TAG, "string changing to: $tempString")   
+        Handler(Looper.getMainLooper()).post {
+            temperatureView?.visibility = TextView.VISIBLE
+            temperatureView?.text = tempString
+        }
     }
 }

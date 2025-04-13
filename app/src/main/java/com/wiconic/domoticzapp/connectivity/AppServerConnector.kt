@@ -17,7 +17,7 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
     private var handler = Handler(Looper.getMainLooper())
     private val RECONNECT_DELAY_BASE = 2000L
     private val MAX_RECONNECT_DELAY = 30000L
-    private var TAG = "DomoticzAppServerConnection"
+    private var TAG = "AppServerConnector"
 
     fun addOnWebSocketActiveListener(listener: (Boolean) -> Unit) {
         onWebSocketActiveListeners.add(listener)

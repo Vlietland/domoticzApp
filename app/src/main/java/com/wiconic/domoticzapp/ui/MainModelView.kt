@@ -92,7 +92,8 @@ class MainModelView : ViewModel() {
         serverIconController = ServerIconController(appServerConnector)   
         appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
 
-        weatherController = WeatherController(appServerConnector::sendMessage)   
+        weatherController = WeatherController(appServerConnector::sendMessage)
+        appServerConnector.addOnWebSocketActiveListener(weatherController::onWebSocketActiveListeners)        
 
         preferenceObserver = PreferenceObserver(
             appContext,

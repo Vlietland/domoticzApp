@@ -70,7 +70,6 @@ class MessageHandler(private val context: Context) {
     private fun handleCameraImage(json: JSONObject) {
         val cameraId = json.optString("cameraId")
         val imageData = json.optString("imageData", "Unknown data")
-
         if (imageData.isNotEmpty()) {
             onImage?.invoke(imageData)
             Log.i(TAG, "Image from camera $cameraId received successfully.")
@@ -80,8 +79,7 @@ class MessageHandler(private val context: Context) {
     }
 
     private fun handleWeatherData(json: JSONObject) {
-        val temp = json.optString("Temp", "Unknown data")
-
+        val temp = json.optString("outsideTemp", "Unknown data")
         if (temp.isNotEmpty()) {
             onWeather?.invoke(temp)
             Log.i(TAG, "Weather data received: $temp")
