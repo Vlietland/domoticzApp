@@ -14,6 +14,7 @@ import android.widget.Button
 import androidx.lifecycle.ViewModel
 import com.wiconic.domoticzapp.connectivity.AppServerConnector
 import com.wiconic.domoticzapp.connectivity.SoundConnector
+import com.wiconic.domoticzapp.connectivity.LocationConnector
 import com.wiconic.domoticzapp.controller.AlertController
 import com.wiconic.domoticzapp.controller.CameraController
 import com.wiconic.domoticzapp.controller.GateController
@@ -38,6 +39,7 @@ class MainModelView : ViewModel() {
     private lateinit var weatherController: WeatherController    
     private lateinit var preferenceObserver: PreferenceObserver
     private lateinit var geofence: Geofence
+    private lateinit var locationConnector: LocationConnector
     private lateinit var notificationController: NotificationController
     private lateinit var domoticzAppService: DomoticzAppService
     private lateinit var appServerConnector: AppServerConnector
@@ -74,25 +76,24 @@ class MainModelView : ViewModel() {
         soundConnector = SoundConnector(context)
         domoticzAppService = service
         appServerConnector = domoticzAppService.getAppServerConnector() 
+        locationConnector = LocationConnector(context)
+
         appPreferences = domoticzAppService.getAppPreferences()           
         geofence = Geofence(appPreferences)
 
-        alertController = AlertController(appServerConnector::sendMessage)
-        appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)         
-
-        notificationController = NotificationController(alertController::getAlerts, soundConnector::playNotification)
-        
         cameraController = CameraController(appServerConnector::sendMessage)
-        appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)         
-
-        gateController = GateController(appServerConnector::sendMessage)
-        geofenceController = GeofenceController(gateController::openGate, appPreferences)
-        geofence.setOnGeofenceStateChangeCallback(geofenceController::onIsWithinGeofenceCallback)  
-
-        serverIconController = ServerIconController(appServerConnector)   
-        appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
-
         weatherController = WeatherController(appServerConnector::sendMessage)
+        gateController = GateController(appServerConnector::sendMessage)
+        serverIconController = ServerIconController(appServerConnector)   
+
+        alertController = AlertController(appServerConnector::sendMessage)
+        notificationController = NotificationController(alertController::getAlerts, soundConnector::playNotification)
+
+        geofenceController = GeofenceController(gateController::openGate, locationConnector, geofence, appPreferences)
+
+        appServerConnector.addOnWebSocketActiveListener(serverIconController::onWebSocketActiveListeners)
+        appServerConnector.addOnWebSocketActiveListener(cameraController::onWebSocketActiveListeners)         
+        appServerConnector.addOnWebSocketActiveListener(alertController::onWebSocketActiveListeners)         
         appServerConnector.addOnWebSocketActiveListener(weatherController::onWebSocketActiveListeners)        
 
         preferenceObserver = PreferenceObserver(

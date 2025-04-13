@@ -4,11 +4,14 @@ import android.util.Log
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import com.wiconic.domoticzapp.R
-import com.wiconic.domoticzapp.model.Geofence
 import com.wiconic.domoticzapp.model.AppPreferences
+import com.wiconic.domoticzapp.connectivity.LocationConnector
+import com.wiconic.domoticzapp.model.Geofence
 
 class GeofenceController(
     private val openGate: () -> Unit,
+    private val locationConnector: LocationConnector,
+    private val geofence: Geofence,
     private val appPreferences: AppPreferences
 ) {
     private var isCurrentlyWithinGeofence = false
@@ -30,6 +33,11 @@ class GeofenceController(
     fun stopGeofenceMonitoring() {
         Log.i(TAG, "Geofence monitoring stopped.")
         updateGeofenceIcon()
+    }
+    
+    fun onLocationUpdateCallBack() {
+        Log.d(TAG, "Location .")
+
     }
 
     fun onIsWithinGeofenceCallback(inGeofence: Boolean) {
