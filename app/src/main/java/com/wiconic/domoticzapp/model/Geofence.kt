@@ -58,8 +58,8 @@ class Geofence(
 
     fun newDelay() = newDelay
     fun getIsWithinGeofence() = lastWithinGeofence
-    fun getFenceStatusChanged() = fenceTripped
-    fun resetFenceStatusChanged() {fenceTripped = false}
+    fun getFenceTripped() = fenceTripped
+    fun resetFenceTripped() {fenceTripped = false}
 
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
         testDistanceCounter++

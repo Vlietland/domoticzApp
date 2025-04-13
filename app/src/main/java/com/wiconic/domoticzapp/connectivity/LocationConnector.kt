@@ -27,8 +27,8 @@ class LocationConnector(private val context: Context) {
         Log.d(TAG, "Providers available: $providers")
         for (provider in providers) {
             val location = locationManager.getLastKnownLocation(provider)
-            Log.d(TAG, "Provider: $provider, Location: $location")
             if (location != null) {
+                Log.d(TAG, "Geofence location: lat=${location.latitude}, lon=${location.longitude}")                
                 if (lastKnownLocation == null || location.accuracy < lastKnownLocation.accuracy) {
                     lastKnownLocation = location
                     Log.d(TAG, "Updated best location from provider: $provider")
