@@ -52,15 +52,11 @@ class MainModelView : ViewModel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             val hasAccess = notificationManager.isNotificationPolicyAccessGranted
-
             Log.d("DND", "Notification policy access = $hasAccess")
-
             if (!hasAccess) {
                 AlertDialog.Builder(context)
                     .setTitle("Permission Needed")
-                    .setMessage(
-                        "To play alerts while Do Not Disturb is on, please allow DomoticzApp to manage DND settings."
-                    )
+                    .setMessage("To play alerts while Do Not Disturb is on, please allow DomoticzApp to manage DND settings.")
                     .setPositiveButton("Grant Access") { _, _ ->
                         val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
                         context.startActivity(intent)

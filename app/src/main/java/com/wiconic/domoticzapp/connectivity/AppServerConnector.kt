@@ -46,7 +46,7 @@ class AppServerConnector(private val appPreferences: AppPreferences) {
         }
 
         override fun onMessage(webSocket: WebSocket, text: String) {
-            Log.d(TAG, "Message received: $text")
+            Log.d(TAG, "Message received")
             onMessageReceived?.invoke(text)
         }
 

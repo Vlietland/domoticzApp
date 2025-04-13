@@ -1,36 +1,38 @@
 package com.wiconic.domoticzapp.connectivity
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Bundle
+import android.util.Log
+import androidx.core.content.ContextCompat
 import com.wiconic.domoticzapp.model.Geofence
-import com.wiconic.domoticzapp.connectivity.LocationConnector
 
-class LocationConnector(context: Context, private val geofence: Geofence) {
+class LocationConnector(private val context: Context) {
     private val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    private const val TAG = "LocationConnector"
 
-    private val locationListener = object : LocationListener {
-        override fun onLocationChanged(location: Location) {
-            geofence.updateLocation(location.latitude, location.longitude)
+    fun getLastKnownLocation(): Location? {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.w(TAG, "Location permission not granted")
+            return null
         }
-
-        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-        override fun onProviderEnabled(provider: String) {}
-        override fun onProviderDisabled(provider: String) {}
-    }
-
-    fun startLocationUpdates() {
-        locationManager.requestLocationUpdates(
-            LocationManager.GPS_PROVIDER,
-            10000L,
-            10f,
-            locationListener
-        )
-    }
-
-    fun stopLocationUpdates() {
-        locationManager.removeUpdates(locationListener)
+        var lastKnownLocation: Location? = null
+        val providers = locationManager.getProviders(true)
+        Log.d(TAG, "Providers available: $providers")
+        for (provider in providers) {
+            val location = locationManager.getLastKnownLocation(provider)
+            Log.d(TAG, "Provider: $provider, Location: $location")
+            if (location != null) {
+                if (lastKnownLocation == null || location.accuracy < lastKnownLocation.accuracy) {
+                    lastKnownLocation = location
+                    Log.d(TAG, "Updated best location from provider: $provider")
+                }
+            }
+        }
+        Log.d(TAG, "Final selected location: $lastKnownLocation")
+        return lastKnownLocation
     }
 }

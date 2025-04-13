@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="end|center_vertical"
             android:layout_marginStart="16dp"
-            android:src="@drawable/ic_baseline_location_off"
+            android:src="@drawable/ic_geofence_location_unavailable"
             android:contentDescription="Geofence Status" />
 
        <TextView
