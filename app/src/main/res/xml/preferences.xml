@@ -72,7 +72,21 @@
             android:title="@string/accuracy_threshold_title"
             android:summary="@string/accuracy_threshold_summary"
             android:inputType="number"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreferenceCompat
+            android:key="geofence_trigger_open_enabled"
+            android:title="@string/geofence_trigger_open_title"
+            android:summary="@string/geofence_trigger_open_summary"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
+
+        <SwitchPreferenceCompat
+            android:key="geofence_trigger_close_enabled"
+            android:title="@string/geofence_trigger_close_title"
+            android:summary="@string/geofence_trigger_close_summary"
+            android:defaultValue="false"
+            app:iconSpaceReserved="false"/>
     </PreferenceCategory>
 
 

@@ -35,6 +35,8 @@ class SettingsActivity : AppCompatActivity() {
             setupPreference("minimum_polling_delay", appPreferences.getMinPollingDelay().toString())
             setupPreference("maximum_polling_delay", appPreferences.getMaxPollingDelay().toString())            
             setupPreference("accuracy_threshold", appPreferences.getAccuracyThreshold().toString())
+            setupPreference("geofence_trigger_open_enabled", appPreferences.getAccuracyThreshold().toString())
+            setupPreference("geofence_trigger_close_enabled", appPreferences.getAccuracyThreshold().toString())
         }
 
         private fun setupPreference(key: String, defaultValue: String) {
