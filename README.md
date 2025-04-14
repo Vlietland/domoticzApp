@@ -5,11 +5,9 @@ DomoticzApp is a mobile Android application designed to interact with a Domoticz
 <p align="center">
   <img src="images/portrait.png" alt="Portrait within geofence" width="250"/>
   <img src="images/portrait2.png" alt="Portrait with alert logs and unavailable gps location" width="250"/>
-  <img src="images/settings.png" alt="Preference settings" width="300"/>
+  <img src="images/settings.png" alt="Preference settings" width="250"/>
 </p>
-<p align="center">
-  <img src="images/landscape.png" alt="Landscape camera image" width="250"/>
-</p>
+<img src="images/landscape.png" alt="Landscape camera image" width="700"/>
 
 ## System Requirements
 
