@@ -63,16 +63,15 @@ class GeofenceController(
                 val threshold = appPreferences.getAccuracyThreshold()
                 if (location == null) {
                     locationState = LocationState.UNAVAILABLE
-                    Log.w(TAG, "No valid location available")
+                    Log.w(TAG, "Location is null")
                     geofence.updateLocation(null, null)
                 } else if (location.accuracy > threshold) {
                     locationState = LocationState.UNRELIABLE
                     geofence.updateLocation(null, null)                    
-                    Log.d(TAG, "Geofence location: lat=${location.latitude}, lon=${location.longitude}")                    
-                    Log.d(TAG, "Accuracy: ${location.accuracy} > threshold: $threshold")                    
+                    Log.d(TAG, "Location: lat=${location.latitude}, lon=${location.longitude} Accuracy not ok: ${location.accuracy} > threshold: $threshold")                    
                 } else {
                     locationState = LocationState.RELIABLE
-                    Log.d(TAG, "Geofence location: lat=${location.latitude}, lon=${location.longitude}")
+                    Log.d(TAG, "Location: lat=${location.latitude}, lon=${location.longitude} Accuracy ok: ${location.accuracy} < threshold: $threshold")
                     geofence.updateLocation(location.latitude, location.longitude)
                     if (geofence.getFenceTripped()) {
                         processGateCommand()
