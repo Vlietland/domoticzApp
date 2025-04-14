@@ -15,7 +15,7 @@ class AppPreferences(private val context: Context) {
         const val KEY_GEOFENCE_CENTER_LAT = "geofence_lat"
         const val KEY_GEOFENCE_CENTER_LON = "geofence_lon"
         const val KEY_MIN_POLLING_DELAY = "minimum_polling_delay"
-        const val KEY_MAX_POLLING_DELAY = "maximum_polling_delay"
+        const val KEY_MINIMUM_UPDATE_DISTANCE = "minimum_update_distance"
         const val KEY_ACCURACY_THRESHOLD = "accuracy_threshold"
         const val KEY_GEOFENCE_TRIGGER_OPEN_ENABLED = "geofence_trigger_open_enabled"
         const val KEY_GEOFENCE_TRIGGER_CLOSE_ENABLED = "geofence_trigger_close_enabled"
@@ -25,9 +25,9 @@ class AppPreferences(private val context: Context) {
         const val DEFAULT_GEOFENCE_RADIUS = 100
         const val DEFAULT_CENTER_LAT = 52.379189
         const val DEFAULT_CENTER_LON = 4.899431
-        const val DEFAULT_MIN_POLLING_DELAY = 60L
-        const val DEFAULT_MAX_POLLING_DELAY = 1800L
-        const val DEFAULT_ACCURACY_THRESHOLD = 3
+        const val DEFAULT_MIN_POLLING_DELAY = 5L
+        const val DEFAULT_MINIMUM_UPDATE_DISTANCE = 10
+        const val DEFAULT_ACCURACY_THRESHOLD = 50
         const val DEFAULT_GEOFENCE_TRIGGER_OPEN_ENABLED = false
         const val DEFAULT_GEOFENCE_TRIGGER_CLOSE_ENABLED = false
     }
@@ -91,13 +91,13 @@ class AppPreferences(private val context: Context) {
         sharedPreferences.edit().putString(KEY_MIN_POLLING_DELAY, value.toString()).apply()
     }
 
-    fun getMaxPollingDelay(): Long {
-        val stringValue = sharedPreferences.getString(KEY_MAX_POLLING_DELAY, DEFAULT_MAX_POLLING_DELAY.toString())
-        return stringValue?.toLongOrNull() ?: DEFAULT_MAX_POLLING_DELAY
+    fun getMinimumUpdateDistance(): Int {
+        val stringValue = sharedPreferences.getString(KEY_MINIMUM_UPDATE_DISTANCE, DEFAULT_MINIMUM_UPDATE_DISTANCE.toString())
+        return stringValue?.toIntOrNull() ?: DEFAULT_MINIMUM_UPDATE_DISTANCE
     }
 
-    fun setMaxPollingDelay(value: Long) {
-        sharedPreferences.edit().putString(KEY_MAX_POLLING_DELAY, value.toString()).apply()
+    fun setMinimumUpdateDistance(value: Int) {
+        sharedPreferences.edit().putString(KEY_MINIMUM_UPDATE_DISTANCE, value.toString()).apply()
     }
 
     fun getAccuracyThreshold(): Int {

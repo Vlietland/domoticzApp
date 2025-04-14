@@ -33,7 +33,7 @@ class SettingsActivity : AppCompatActivity() {
             setupPreference("geofence_lon", appPreferences.getGeofenceCenterLon().toString())
             setupPreference("geofence_radius", appPreferences.getGeofenceRadius().toString())
             setupPreference("minimum_polling_delay", appPreferences.getMinPollingDelay().toString())
-            setupPreference("maximum_polling_delay", appPreferences.getMaxPollingDelay().toString())            
+            setupPreference("minimum_update_distance", appPreferences.getMinimumUpdateDistance().toString())            
             setupPreference("accuracy_threshold", appPreferences.getAccuracyThreshold().toString())
             setupPreference("geofence_trigger_open_enabled", appPreferences.getAccuracyThreshold().toString())
             setupPreference("geofence_trigger_close_enabled", appPreferences.getAccuracyThreshold().toString())

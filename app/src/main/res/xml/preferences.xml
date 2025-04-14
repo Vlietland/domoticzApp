@@ -61,9 +61,9 @@
             app:iconSpaceReserved="false" />
 
         <EditTextPreference
-            android:key="maximum_polling_delay"
-            android:title="@string/maximum_polling_delay_title"
-            android:summary="@string/maximum_polling_delay_summary"
+            android:key="minimum_update_distance"
+            android:title="@string/minimum_update_distance_title"
+            android:summary="@string/minimum_update_distance_summary"
             android:inputType="number"
             app:iconSpaceReserved="false" />
 

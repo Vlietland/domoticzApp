@@ -1,35 +1,33 @@
 package com.wiconic.domoticzapp.controller
 
+import android.location.Location
+import android.location.LocationListener
+import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import com.wiconic.domoticzapp.R
 import com.wiconic.domoticzapp.model.AppPreferences
 import com.wiconic.domoticzapp.connectivity.LocationConnector
 import com.wiconic.domoticzapp.model.Geofence
-import kotlinx.coroutines.*
 
 class GeofenceController(
     private val openGate: () -> Unit,
     private val closeGate: () -> Unit,
     private val locationConnector: LocationConnector,
     private val geofence: Geofence,
-    private val appPreferences: AppPreferences,
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
-) {
+    private val appPreferences: AppPreferences
+) : LocationListener {
     private enum class LocationState {
         UNAVAILABLE,
         UNRELIABLE,
         RELIABLE
     }
-
     private var geofenceIconView: ImageView? = null
     private var lastIcon: Int? = null
     private val ICON_INSIDE_GEOFENCE = R.drawable.ic_geofence_within_fence
     private val ICON_OUTSIDE_GEOFENCE = R.drawable.ic_geofence_outside_fence
     private val ICON_LOCATION_UNAVAILABLE = R.drawable.ic_geofence_location_unavailable
     private val ICON_LOCATION_UNRELIABLE = R.drawable.ic_geofence_location_unreliable
-    private val SHORT_POLLING_DELAY = 1000
-    private var pollingJob: Job? = null
     private var locationState: LocationState = LocationState.UNAVAILABLE
     private val TAG = "GeofenceController"
 
@@ -40,73 +38,90 @@ class GeofenceController(
     }
 
     fun restartGeofenceMonitoring() {
+        Log.i(TAG, "Restarting geofence monitoring.")
         stopGeofenceMonitoring()
-        startGeofenceMonitoring()
+        if (appPreferences.getGeofenceEnabled()) {
+            startGeofenceMonitoring()
+        } else {
+             Log.i(TAG, "Geofence is disabled, not restarting monitoring.")
+             updateGeofenceIcon()
+        }
     }
 
     fun startGeofenceMonitoring() {
-        Log.i(TAG, "Geofence monitoring started.")
-        startPollingLocation()
+        if (!appPreferences.getGeofenceEnabled()) {
+            Log.i(TAG, "Attempted to start monitoring, but geofence is disabled.")
+            updateGeofenceIcon()
+            return
+        }
+        Log.i(TAG, "Starting geofence monitoring.")
+        val minTimeMs = appPreferences.getMinPollingDelay() * 1000L
+        val minDistanceM = appPreferences.getMinimumUpdateDistance().toFloat()
+        Log.d(TAG, "Using minTimeMs: $minTimeMs, minDistanceM: $minDistanceM from AppPreferences")
+        locationConnector.startLocationUpdates(this, minTimeMs, minDistanceM)
         updateGeofenceIcon()
     }
 
     fun stopGeofenceMonitoring() {
-        Log.i(TAG, "Geofence monitoring stopped.")
-        stopPollingLocation()
+        Log.i(TAG, "Stopping geofence monitoring.")
+        locationConnector.stopLocationUpdates(this)
+        locationState = LocationState.UNAVAILABLE
         updateGeofenceIcon()
     }
 
-    private fun startPollingLocation() {
-        pollingJob = coroutineScope.launch {
-            while (isActive) {
-                val location = locationConnector.getLastKnownLocation()
-                val threshold = appPreferences.getAccuracyThreshold()
-                if (location == null) {
-                    locationState = LocationState.UNAVAILABLE
-                    Log.w(TAG, "Location is null")
-                    geofence.updateLocation(null, null)
-                } else if (location.accuracy > threshold) {
-                    locationState = LocationState.UNRELIABLE
-                    geofence.updateLocation(null, null)                    
-                    Log.d(TAG, "Location: lat=${location.latitude}, lon=${location.longitude} Accuracy not ok: ${location.accuracy} > threshold: $threshold")                    
-                } else {
-                    locationState = LocationState.RELIABLE
-                    Log.d(TAG, "Location: lat=${location.latitude}, lon=${location.longitude} Accuracy ok: ${location.accuracy} < threshold: $threshold")
-                    geofence.updateLocation(location.latitude, location.longitude)
-                    if (geofence.getFenceTripped()) {
-                        processGateCommand()
-                        geofence.resetFenceTripped()
-                    }
-                }
-                updateGeofenceIcon()                
-                delay(geofence.newDelayMilliseconds())
+    override fun onLocationChanged(location: Location) {
+        Log.d(TAG, "Received location update: $location")
+        val threshold = appPreferences.getAccuracyThreshold()
+        if (location.accuracy > threshold) {
+            locationState = LocationState.UNRELIABLE
+            Log.w(TAG, "Location accuracy poor: ${location.accuracy} > threshold: $threshold. State set to UNRELIABLE.")
+        } else {
+            locationState = LocationState.RELIABLE
+            Log.d(TAG, "Location accuracy acceptable: ${location.accuracy} <= threshold: $threshold. State set to RELIABLE.")
+            geofence.updateLocation(location.latitude, location.longitude)
+            if (geofence.getFenceTripped()) {
+                processGateCommand()
+                geofence.resetFenceTripped()
             }
         }
+        updateGeofenceIcon()
     }
 
-    private fun stopPollingLocation() {
-        pollingJob?.cancel()
+    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        Log.d(TAG, "Location provider status changed: Provider=$provider, Status=$status")
+    }
+
+    override fun onProviderEnabled(provider: String) {
+         Log.i(TAG, "Location provider enabled: $provider")
+    }
+
+    override fun onProviderDisabled(provider: String) {
+        Log.w(TAG, "Location provider disabled: $provider")
     }
 
     private fun processGateCommand() {
         if (geofence.getIsWithinGeofence() && appPreferences.getGeofenceTriggerOpenEnabled()) {
-            Log.i(TAG, "Sending gate open command")
+             Log.i(TAG, "Inside geofence and trigger open enabled. Sending gate open command.")
             openGate()
         } else if (!geofence.getIsWithinGeofence() && appPreferences.getGeofenceTriggerCloseEnabled()) {
-            Log.i(TAG, "Sending gate close command")
+             Log.i(TAG, "Outside geofence and trigger close enabled. Sending gate close command.")
             closeGate()
         }
     }
 
     private fun updateGeofenceIcon() {
-        val icon = when (locationState) {
-            LocationState.UNAVAILABLE -> ICON_LOCATION_UNAVAILABLE
-            LocationState.UNRELIABLE -> ICON_LOCATION_UNRELIABLE
-            LocationState.RELIABLE -> if (geofence.getIsWithinGeofence()) ICON_INSIDE_GEOFENCE else ICON_OUTSIDE_GEOFENCE
+        val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
+        val icon = if (!appPreferences.getGeofenceEnabled()) {
+             ICON_LOCATION_UNAVAILABLE
+        } else {
+            when (locationState) {
+                LocationState.UNAVAILABLE -> ICON_LOCATION_UNAVAILABLE
+                LocationState.UNRELIABLE -> ICON_LOCATION_UNRELIABLE
+                LocationState.RELIABLE -> if (geofence.getIsWithinGeofence()) ICON_INSIDE_GEOFENCE else ICON_OUTSIDE_GEOFENCE
+            }
         }
-        if (lastIcon != icon) {
-            Log.d(TAG, "Updating geofence icon to: $icon")
-            val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
+        if (lastIcon != icon || geofenceIconView?.visibility != visibility) {
+            Log.d(TAG, "Updating geofence icon. New Icon: $icon, Visibility: $visibility")
             geofenceIconView?.setImageResource(icon)
             geofenceIconView?.visibility = visibility
             lastIcon = icon
