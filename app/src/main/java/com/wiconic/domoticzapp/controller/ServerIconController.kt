@@ -13,7 +13,7 @@ class ServerIconController(appServerConnector: AppServerConnector) {
     private val ICON_CONNECTED = R.drawable.ic_server_connection_active
     private val ICON_DISCONNECTED = R.drawable.ic_server_connection_deactive
 
-    fun setServerConnectionIcon(icon: ImageView) {
+    fun setServerConnectionIconView(icon: ImageView) {
         serverConnectionIcon = icon
         updateServerConnectionIcon()        
     }

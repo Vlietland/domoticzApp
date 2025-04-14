@@ -114,8 +114,8 @@ class MainModelView : ViewModel() {
 
     fun setupUIComponents(
         cameraImageView: ImageView,
-        geofenceIcon: ImageView,
-        serverConnectionIcon: ImageView,
+        geofenceIconView: ImageView,
+        serverConnectionIconView: ImageView,
         temperatureTextView: TextView,
         alertTextView: TextView,
         openGateButton: Button,
@@ -124,8 +124,8 @@ class MainModelView : ViewModel() {
     ) {
         cameraController.setImageViewAndProgress(cameraImageView, cameraProgressBar) 
         alertController.setAlertView(alertTextView)
-        serverIconController.setServerConnectionIcon(serverConnectionIcon)
-        geofenceController.setGeofenceIcon(geofenceIcon)
+        serverIconController.setServerConnectionIconView(serverConnectionIconView)
+        geofenceController.setGeofenceIconView(geofenceIconView)
         gateController.setGateButtons(openGateButton, closeGateButton)
         weatherController.setTemperatureView(temperatureTextView)
     }

@@ -2,7 +2,6 @@ package com.wiconic.domoticzapp.controller
 
 import android.util.Log
 import android.widget.ImageView
-import androidx.core.content.ContextCompat
 import com.wiconic.domoticzapp.R
 import com.wiconic.domoticzapp.model.AppPreferences
 import com.wiconic.domoticzapp.connectivity.LocationConnector
@@ -17,17 +16,25 @@ class GeofenceController(
     private val appPreferences: AppPreferences,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Main)
 ) {
-    private var geofenceIcon: ImageView? = null
+    private enum class LocationState {
+        UNAVAILABLE,
+        UNRELIABLE,
+        RELIABLE
+    }
+
+    private var geofenceIconView: ImageView? = null
+    private var lastIcon: Int? = null
     private val ICON_INSIDE_GEOFENCE = R.drawable.ic_geofence_within_fence
     private val ICON_OUTSIDE_GEOFENCE = R.drawable.ic_geofence_outside_fence
     private val ICON_LOCATION_UNAVAILABLE = R.drawable.ic_geofence_location_unavailable
+    private val ICON_LOCATION_UNRELIABLE = R.drawable.ic_geofence_location_unreliable
     private val SHORT_POLLING_DELAY = 1000
     private var pollingJob: Job? = null
-    private var hasLocation: Boolean = false
+    private var locationState: LocationState = LocationState.UNAVAILABLE
     private val TAG = "GeofenceController"
 
-    fun setGeofenceIcon(icon: ImageView) {
-        geofenceIcon = icon
+    fun setGeofenceIconView(iconView: ImageView) {
+        geofenceIconView = iconView
         updateGeofenceIcon()
         if (appPreferences.getGeofenceEnabled()) startGeofenceMonitoring()
     }
@@ -55,21 +62,25 @@ class GeofenceController(
                 val location = locationConnector.getLastKnownLocation()
                 val threshold = appPreferences.getAccuracyThreshold()
                 if (location == null) {
-                    hasLocation = false
+                    locationState = LocationState.UNAVAILABLE
                     Log.w(TAG, "No valid location available")
-                } else if (location.accuracy > appPreferences.getAccuracyThreshold()) {
-                    Log.d(TAG, "Accuracy: ${location.accuracy} > threshold: ${threshold}")
+                    geofence.updateLocation(null, null)
+                } else if (location.accuracy > threshold) {
+                    locationState = LocationState.UNRELIABLE
+                    geofence.updateLocation(null, null)                    
+                    Log.d(TAG, "Geofence location: lat=${location.latitude}, lon=${location.longitude}")                    
+                    Log.d(TAG, "Accuracy: ${location.accuracy} > threshold: $threshold")                    
                 } else {
-                    hasLocation = true
+                    locationState = LocationState.RELIABLE
                     Log.d(TAG, "Geofence location: lat=${location.latitude}, lon=${location.longitude}")
                     geofence.updateLocation(location.latitude, location.longitude)
-                    updateGeofenceIcon()
                     if (geofence.getFenceTripped()) {
                         processGateCommand()
                         geofence.resetFenceTripped()
                     }
                 }
-                delay(geofence.newDelay())
+                updateGeofenceIcon()                
+                delay(geofence.newDelayMilliseconds())
             }
         }
     }
@@ -89,14 +100,17 @@ class GeofenceController(
     }
 
     private fun updateGeofenceIcon() {
-        val icon = when {
-            !hasLocation -> ICON_LOCATION_UNAVAILABLE
-            geofence.getIsWithinGeofence() -> ICON_INSIDE_GEOFENCE
-            else -> ICON_OUTSIDE_GEOFENCE
+        val icon = when (locationState) {
+            LocationState.UNAVAILABLE -> ICON_LOCATION_UNAVAILABLE
+            LocationState.UNRELIABLE -> ICON_LOCATION_UNRELIABLE
+            LocationState.RELIABLE -> if (geofence.getIsWithinGeofence()) ICON_INSIDE_GEOFENCE else ICON_OUTSIDE_GEOFENCE
         }
-        Log.d(TAG, "Updating geofence icon to: $icon")
-        val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
-        geofenceIcon?.setImageResource(icon)
-        geofenceIcon?.visibility = visibility
+        if (lastIcon != icon) {
+            Log.d(TAG, "Updating geofence icon to: $icon")
+            val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
+            geofenceIconView?.setImageResource(icon)
+            geofenceIconView?.visibility = visibility
+            lastIcon = icon
+        }
     }
 }
