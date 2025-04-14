@@ -2,11 +2,14 @@
 
 DomoticzApp is a mobile Android application designed to interact with a Domoticz home automation system through a middleware server. The app provides real-time notifications, camera feeds, gate control, and geofence-based automation for an enhanced smart home experience. In fact the app is targeting my own use case but probably it is a starting point for others that would like to thave a specific app to interact with their home automation system.
 
-<img src="images/portrait.png" alt="Portrait within geofence" width="300"/>
-<img src="images/portrait2.png" alt="Portrait with alert logs and unavailable gps location" width="300"/>
-<img src="images/settings.png" alt="Preference settings" width="300"/
-<img src="images/landscape.png" alt="Landscape camera image" width="700"/>
->
+<p align="center">
+  <img src="images/portrait.png" alt="Portrait within geofence" width="250"/>
+  <img src="images/portrait2.png" alt="Portrait with alert logs and unavailable gps location" width="250"/>
+  <img src="images/landscape.png" alt="Landscape camera image" width="250"/>
+</p>
+<p align="center">
+  <img src="images/settings.png" alt="Preference settings" width="300"/>
+</p>
 
 ## System Requirements
 
