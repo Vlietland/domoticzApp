@@ -2,6 +2,11 @@
 
 DomoticzApp is a mobile Android application designed to interact with a Domoticz home automation system through a middleware server. The app provides real-time notifications, camera feeds, gate control, and geofence-based automation for an enhanced smart home experience. In fact the app is targeting my own use case but probably it is a starting point for others that would like to thave a specific app to interact with their home automation system.
 
+![Portrait within geofence](images/portrait.png)
+![Portrait with alert logs and unavailable gps location](images/portrait2.png)
+![Landscape camera image](images/landscape.png)
+![Preference settings](images/settings.png)
+
 ## System Requirements
 
 - Android 6.0 (API level 23) or higher
@@ -62,11 +67,11 @@ The app can be configured through the Settings screen, accessible from the main 
 - **Geofence Settings**:
   - Enable/Disable Geofence
   - Geofence Center (Latitude/Longitude)
-  - Geofence Radius (default: 100 meters)
-  - Measurements Before Trigger (default: 3)
+  - Geofence Radius (default)
   - Minimum Polling Frequency (default: 60 seconds)
-  - Maximum Polling Frequency (default: 1800 seconds)
-
+  - Minimum Update Distance 
+  - Accuracy Threshold in meters
+  
 ### Custom Device Configuration
 
 The app supports up to 5 configurable devices and 8 cameras. Device names and notification messages can be customized by modifying the `app/build.gradle.kts` file:
