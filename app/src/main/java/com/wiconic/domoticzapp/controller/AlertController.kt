@@ -30,6 +30,7 @@ class AlertController(private val sendMessage: (String) -> Unit) {
     }
 
     fun onAlerts(alerts: JSONArray) {
+        Log.d(TAG, "Alert list received")        
         alertCache.clear()            
         for (i in 0 until alerts.length()) {
             val alert = alerts.getJSONObject(i)
@@ -40,7 +41,7 @@ class AlertController(private val sendMessage: (String) -> Unit) {
                 val formattedTimestamp = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault()).format(Date(timestamp.toLong() * 1000))
                 val formattedMessage = "[$formattedTimestamp] $alertText"
                 alertCache.add(formattedMessage)
-                Log.i(TAG, "Messages to the AlertText cache")
+                Log.v(TAG, "Messages to the AlertText cache")
             } else {
                 Log.w(TAG, "Unknown device name: $deviceName")
             }

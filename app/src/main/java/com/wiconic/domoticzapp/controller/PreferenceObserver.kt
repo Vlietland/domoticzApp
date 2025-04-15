@@ -21,10 +21,6 @@ class PreferenceObserver(
     private var isRegistered = false    
     private val TAG = "PreferenceObserver"
 
-    init {
-        Log.i(TAG, "PreferenceObserver instance created.")
-    }
-
     override fun onCreate(owner: LifecycleOwner) {
         register()
     }
@@ -33,7 +29,7 @@ class PreferenceObserver(
         if (!isRegistered) {
             sharedPreferences.registerOnSharedPreferenceChangeListener(this)
             isRegistered = true
-            Log.i(TAG, "PreferenceObserver registered.")
+            Log.v(TAG, "PreferenceObserver registered.")
         }
     }
 
@@ -41,20 +37,18 @@ class PreferenceObserver(
         when (key) {
             AppPreferences.KEY_SERVER_IP_ADDRESS,
             AppPreferences.KEY_SERVER_PORT -> {
-                Log.i(TAG, "Websocket connection settings changed. Reconnecting.")
+                Log.v(TAG, "Websocket connection settings changed. Reconnecting.")
                 initializeConnection()
             }
-
             AppPreferences.KEY_GEOFENCE_ENABLED -> {
                 if (appPreferences.getGeofenceEnabled()) {
                     startGeofenceMonitoring()                    
-                    Log.i(TAG, "Geofence enabled. Starting monitoring.")
+                    Log.v(TAG, "Geofence enabled. Starting monitoring.")
                 } else {
-                    Log.i(TAG, "Geofence disabled. Stopping monitoring.")
+                    Log.v(TAG, "Geofence disabled. Stopping monitoring.")
                     stopGeofenceMonitoring()
                 }
             }
-
             AppPreferences.KEY_GEOFENCE_RADIUS,
             AppPreferences.KEY_GEOFENCE_CENTER_LAT,
             AppPreferences.KEY_GEOFENCE_CENTER_LON,
@@ -62,10 +56,9 @@ class PreferenceObserver(
             AppPreferences.KEY_MINIMUM_UPDATE_DISTANCE,
             AppPreferences.KEY_ACCURACY_THRESHOLD,
              -> {
-                Log.i(TAG, "Geofence configuration changed. Reinitializing geofence.")
+                Log.v(TAG, "Geofence configuration changed. Reinitializing geofence.")
                 restartGeofenceMonitoring()
             }
-
             else -> Log.w(TAG, "Unknown preference key changed: $key")
         }
     }
@@ -78,7 +71,7 @@ class PreferenceObserver(
         if (isRegistered) {
             sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
             isRegistered = false
-            Log.i(TAG, "PreferenceObserver unregistered.")
+            Log.v(TAG, "PreferenceObserver unregistered.")
         }
     }
 }

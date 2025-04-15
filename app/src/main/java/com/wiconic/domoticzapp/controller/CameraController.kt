@@ -22,7 +22,7 @@ class CameraController(private val sendMessage: (String) -> Unit
     private val TAG = "CameraController"        
 
     init {
-        Log.d(TAG, "CameraController initialized with ${maxCameras} cameras.")
+        Log.v(TAG, "CameraController initialized with ${maxCameras} cameras.")
     }
 
     fun setImageViewAndProgress(newImageView: ImageView, newProgressBar: ProgressBar) {
@@ -33,18 +33,18 @@ class CameraController(private val sendMessage: (String) -> Unit
 
     fun loadNextImage() {
         currentCameraIndex = if (currentCameraIndex < maxCameras) currentCameraIndex + 1 else 1
-        Log.d(TAG, "Swiping to next image. Current camera index: $currentCameraIndex")
+        Log.v(TAG, "Swiping to next image. Current camera index: $currentCameraIndex")
         loadCameraImage()
     }
 
     fun loadPreviousImage() {
         currentCameraIndex = if (currentCameraIndex > 1) currentCameraIndex - 1 else maxCameras
-        Log.d(TAG, "Swiping to previous image. Current camera index: $currentCameraIndex")
+        Log.v(TAG, "Swiping to previous image. Current camera index: $currentCameraIndex")
         loadCameraImage()
     }
 
     fun loadNewImageFromCurrentCamera() {
-        Log.d(TAG, "Refreshing current camera image. Camera ID: $currentCameraIndex")
+        Log.v(TAG, "Refreshing current camera image. Camera ID: $currentCameraIndex")
         loadCameraImage()
     }
 
@@ -60,18 +60,18 @@ class CameraController(private val sendMessage: (String) -> Unit
 
     private fun loadCameraImage() {
         val message = "{\"type\": \"getCameraImage\", \"cameraId\": \"$currentCameraIndex\"}"
-        Log.d(TAG, "Requesting camera image for Camera ID: $currentCameraIndex with message: $message")
+        Log.v(TAG, "Requesting camera image for Camera ID: $currentCameraIndex with message: $message")
         sendMessage(message)
         displayImageLoading()
     }
 
     fun onImage(imageData: String) {
-        Log.d(TAG, "Received image data. Length: ${imageData.length}")
-        Log.d(TAG, "Attempting to decode and display image.")
+        Log.v(TAG, "Received image data. Length: ${imageData.length}")
+        Log.v(TAG, "Attempting to decode and display image.")
         if (cameraImageView == null) return
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                Log.d(TAG, "Image data size: ${imageData.length}")
+                Log.v(TAG, "Image data size: ${imageData.length}")
                 val decodedBytes = Base64.decode(imageData, Base64.DEFAULT)
                 val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
                 if (bitmap != null) {
@@ -80,7 +80,7 @@ class CameraController(private val sendMessage: (String) -> Unit
                         cameraProgressBar?.visibility = View.GONE
                         cameraImageView?.visibility = View.VISIBLE
                         cameraImageView?.setImageBitmap(bitmap)
-                        Log.d(TAG, "Bitmap successfully displayed on ImageView.")
+                        Log.v(TAG, "Bitmap successfully displayed on ImageView.")
                     }
                 } else {
                     Log.e(TAG, "Failed to decode bitmap. Bitmap is null.")
@@ -97,7 +97,7 @@ class CameraController(private val sendMessage: (String) -> Unit
     }
 
     private fun displayImageLoading() {
-        Log.d(TAG, "Image loading started.")
+        Log.v(TAG, "Image loading started.")
         Handler(Looper.getMainLooper()).post {
             cameraProgressBar?.visibility = View.VISIBLE
         }

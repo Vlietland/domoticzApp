@@ -29,7 +29,7 @@ class AlertSwipeController(
 
         return if (isInside) {
             val result = gestureDetector.onTouchEvent(event)
-            Log.d(TAG, "onTouch event received: ${event.action}, Result: $result")
+            Log.v(TAG, "onTouch event received: ${event.action}, Result: $result")
             result
         } else {
             false
@@ -43,7 +43,7 @@ class AlertSwipeController(
         private val MIN_ACTION_INTERVAL = 500L
 
         override fun onDown(e: MotionEvent): Boolean {
-            Log.d(TAG, "onDown detected. Event: $e")
+            Log.v(TAG, "onDown detected. Event: $e")
             return true
         }
 
@@ -52,7 +52,7 @@ class AlertSwipeController(
            
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastActionTime < MIN_ACTION_INTERVAL) {
-                Log.d(TAG, "filtered: $currentTime : $lastActionTime")
+                Log.v(TAG, "filtered: $currentTime : $lastActionTime")
                 return false
             }
 
@@ -61,7 +61,7 @@ class AlertSwipeController(
                 if (diffY < 0) { // Swipe up
                     purgeAlerts()
                     lastActionTime = currentTime
-                    Log.d(TAG, "Cleared messages on swipe up")
+                    Log.v(TAG, "Cleared messages on swipe up")
                     return true
                 }
             }

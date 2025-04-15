@@ -20,13 +20,13 @@ class ServerIconController(appServerConnector: AppServerConnector) {
 
     fun onWebSocketActiveListeners(isConnected: Boolean) {
         this.isConnected = isConnected
-        Log.d(TAG, "Server connection icon refreshing with server status: ${isConnected}.") 
+        Log.v(TAG, "Server connection icon refreshing with server status: ${isConnected}.") 
         updateServerConnectionIcon()        
     }
 
     fun updateServerConnectionIcon() {
         if (serverConnectionIcon == null) return  
-        Log.d(TAG, "Server connection icon refreshing with server status: ${isConnected}.")              
+        Log.v(TAG, "Server connection icon refreshing with server status: ${isConnected}.")              
         val newIconImage = if (isConnected) ICON_CONNECTED else ICON_DISCONNECTED
         serverConnectionIcon?.setImageResource(newIconImage)
     }

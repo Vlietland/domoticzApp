@@ -57,7 +57,7 @@ class GeofenceController(
         Log.i(TAG, "Starting geofence monitoring.")
         val minTimeMs = appPreferences.getMinPollingDelay() * 1000L
         val minDistanceM = appPreferences.getMinimumUpdateDistance().toFloat()
-        Log.d(TAG, "Using minTimeMs: $minTimeMs, minDistanceM: $minDistanceM from AppPreferences")
+        Log.i(TAG, "Using minTimeMs: $minTimeMs, minDistanceM: $minDistanceM from AppPreferences")
         locationConnector.startLocationUpdates(this, minTimeMs, minDistanceM)
         updateGeofenceIcon()
     }
@@ -70,14 +70,14 @@ class GeofenceController(
     }
 
     override fun onLocationChanged(location: Location) {
-        Log.d(TAG, "Received location update: $location")
+        Log.i(TAG, "Received location update: $location")
         val threshold = appPreferences.getAccuracyThreshold()
         if (location.accuracy > threshold) {
             locationState = LocationState.UNRELIABLE
             Log.w(TAG, "Location accuracy poor: ${location.accuracy} > threshold: $threshold. State set to UNRELIABLE.")
         } else {
             locationState = LocationState.RELIABLE
-            Log.d(TAG, "Location accuracy acceptable: ${location.accuracy} <= threshold: $threshold. State set to RELIABLE.")
+            Log.i(TAG, "Location accuracy acceptable: ${location.accuracy} <= threshold: $threshold. State set to RELIABLE.")
             geofence.updateLocation(location.latitude, location.longitude)
             if (geofence.getFenceTripped()) {
                 processGateCommand()
@@ -88,7 +88,7 @@ class GeofenceController(
     }
 
     override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-        Log.d(TAG, "Location provider status changed: Provider=$provider, Status=$status")
+        Log.i(TAG, "Location provider status changed: Provider=$provider, Status=$status")
     }
 
     override fun onProviderEnabled(provider: String) {

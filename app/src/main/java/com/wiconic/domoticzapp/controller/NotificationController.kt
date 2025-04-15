@@ -14,6 +14,6 @@ class NotificationController(
     fun onNewAlertsAvailable() { 
         playNotification.invoke("")
         getAlerts()
-        Log.i(TAG, "Notification received, requesting Alert list.")        
+        Log.d(TAG, "Notification received, requesting Alert list.")        
     }
 }

@@ -12,15 +12,14 @@ class Geofence(
     private val TAG = "Geofence"
 
     fun updateLocation(lat: Double?, lon: Double?) {
-        //var distance: Float? = null
         if (lat != null && lon != null) {
             val distance = calculateDistance(lat, lon, appPreferences.getGeofenceCenterLat(), appPreferences.getGeofenceCenterLon())
             Log.i(TAG, "Geofence location calculated, distance: $distance")
             val withinGeofence = distance <= appPreferences.getGeofenceRadius().toFloat()
-            Log.d(TAG, "Within geofence: $withinGeofence")
+            Log.i(TAG, "Within geofence: $withinGeofence")
             if (lastWithinGeofence != withinGeofence) {
                 fenceTripped = true
-                Log.d(TAG, "Fence tripped: $fenceTripped")
+                Log.i(TAG, "Fence tripped: $fenceTripped")
                 lastWithinGeofence = withinGeofence
             }
         } else {
@@ -31,7 +30,7 @@ class Geofence(
     private fun calculateDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
         val results = FloatArray(1)
         android.location.Location.distanceBetween(lat1, lon1, lat2, lon2, results)
-        Log.d(TAG, "Calculated distance: ${results[0]}")
+        Log.i(TAG, "Calculated distance: ${results[0]}")
         return results[0]
     }
 

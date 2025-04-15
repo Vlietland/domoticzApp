@@ -22,6 +22,6 @@ class GateController(
     fun closeGate() {
         val message = "{\"type\": \"closeGateCommand\"}"
         sendMessage(message)
-        Log.d(TAG, "Gate close request sent.")
+        Log.i(TAG, "Gate close request sent.")
     }
 }

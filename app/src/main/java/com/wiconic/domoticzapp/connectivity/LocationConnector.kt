@@ -22,14 +22,14 @@ class LocationConnector(private val context: Context) {
         }
 
         val providers = locationManager.getProviders(true)
-        Log.d(TAG, "Requesting location updates from providers: $providers")
+        Log.i(TAG, "Requesting location updates from providers: $providers")
 
         if (providers.contains(LocationManager.GPS_PROVIDER)) {
-            Log.d(TAG, "Requesting updates from GPS_PROVIDER (minTime=${minTimeMs}ms, minDistance=${minDistanceM}m)")
+            Log.i(TAG, "Requesting updates from GPS_PROVIDER (minTime=${minTimeMs}ms, minDistance=${minDistanceM}m)")
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, minTimeMs, minDistanceM, listener, Looper.getMainLooper())
         }
         if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-             Log.d(TAG, "Requesting updates from NETWORK_PROVIDER (minTime=${minTimeMs}ms, minDistance=${minDistanceM}m)")
+             Log.i(TAG, "Requesting updates from NETWORK_PROVIDER (minTime=${minTimeMs}ms, minDistance=${minDistanceM}m)")
             locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, minTimeMs, minDistanceM, listener, Looper.getMainLooper())
         }
         if (!providers.contains(LocationManager.GPS_PROVIDER) && !providers.contains(LocationManager.NETWORK_PROVIDER)) {

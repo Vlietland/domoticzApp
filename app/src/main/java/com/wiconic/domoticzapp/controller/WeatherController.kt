@@ -23,9 +23,9 @@ class WeatherController(private val sendMessage: (String) -> Unit) {
         if (value != null) {
             temperature = value.roundToInt()
             updateTempView()
-            Log.d(TAG, "Retrieved and published weatherdata")
+            Log.v(TAG, "Retrieved and published weatherdata")
         } else {
-            Log.d(TAG, "No valid weather data available")
+            Log.v(TAG, "No valid weather data available")
         }
     }
 

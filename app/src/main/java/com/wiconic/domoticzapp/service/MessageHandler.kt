@@ -52,18 +52,16 @@ class MessageHandler(private val context: Context) {
 
     private fun handleNotification(json: JSONObject) {
         val deviceName = json.optString("deviceName", "Unknown notification")
-        Log.i(TAG, "Notification received with message: $deviceName")     
+        Log.d(TAG, "Notification received with message: $deviceName")     
         onNewAlertsAvailable?.invoke()
         onSetCurrentCamera?.invoke(deviceName)
-        Log.i(TAG, "Device notification received: $deviceName")
     }
 
     private fun handleAlerts(json: JSONObject) {
-        Log.i(TAG, "New alert list received")    
+        Log.d(TAG, "New alert list received")    
         val alertList = json.optJSONArray("alertList")        
         if (alertList != null) {
             onAlerts?.invoke(alertList)
-            Log.i(TAG, "Alerts received: $alertList")  
         }      
     }
 
@@ -72,7 +70,7 @@ class MessageHandler(private val context: Context) {
         val imageData = json.optString("imageData", "Unknown data")
         if (imageData.isNotEmpty()) {
             onImage?.invoke(imageData)
-            Log.i(TAG, "Image from camera $cameraId received successfully.")
+            Log.d(TAG, "Image from camera $cameraId received successfully.")
         } else {
             Log.w(TAG, "Empty image data received for camera $cameraId")
         }
@@ -82,7 +80,7 @@ class MessageHandler(private val context: Context) {
         val temp = json.optString("outsideTemp", "Unknown data")
         if (temp.isNotEmpty()) {
             onWeather?.invoke(temp)
-            Log.i(TAG, "Weather data received: $temp")
+            Log.d(TAG, "Weather data received: $temp")
         } else {
             Log.w(TAG, "Empty weather data received")
         }
