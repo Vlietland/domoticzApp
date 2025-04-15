@@ -9,40 +9,47 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@android:color/transparent"
         android:elevation="4dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        android:visibility="gone">>        
+        android:visibility="visible">
 
-        <ImageView
-            android:id="@+id/serverConnectionIcon"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
             android:layout_gravity="end|center_vertical"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_server_connection_deactive"
-            android:contentDescription="Server Connection Status" />            
+            android:paddingEnd="16dp"
+            android:paddingStart="8dp"
+            android:gravity="center_vertical">
 
-        <ImageView
-            android:id="@+id/geofenceIcon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginStart="16dp"
-            android:src="@drawable/ic_geofence_location_unavailable"
-            android:contentDescription="Geofence Status" />
+            <TextView
+                android:id="@+id/temperatureTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--°C"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                android:layout_marginEnd="12dp" />
 
-       <TextView
-            android:id="@+id/temperatureTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginStart="16dp"
-            android:text="--°C"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
+            <ImageView
+                android:id="@+id/geofenceIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_geofence_location_unavailable"
+                android:contentDescription="Geofence Status"
+                android:layout_marginEnd="12dp" />
+
+            <ImageView
+                android:id="@+id/serverConnectionIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_server_connection_deactive"
+                android:contentDescription="Server Connection Status" />
+        </LinearLayout>
+
     </androidx.appcompat.widget.Toolbar>
 
     <ImageView

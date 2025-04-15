@@ -31,10 +31,13 @@ class GeofenceController(
     private var locationState: LocationState = LocationState.UNAVAILABLE
     private val TAG = "GeofenceController"
 
+    init {
+        if (appPreferences.getGeofenceEnabled()) startGeofenceMonitoring()
+    }
+
     fun setGeofenceIconView(iconView: ImageView) {
         geofenceIconView = iconView
-        updateGeofenceIcon()
-        if (appPreferences.getGeofenceEnabled()) startGeofenceMonitoring()
+        updateGeofenceIcon(true)
     }
 
     fun restartGeofenceMonitoring() {
@@ -60,6 +63,7 @@ class GeofenceController(
         Log.i(TAG, "Using minTimeMs: $minTimeMs, minDistanceM: $minDistanceM from AppPreferences")
         locationConnector.startLocationUpdates(this, minTimeMs, minDistanceM)
         updateGeofenceIcon()
+        Exception().printStackTrace()                
     }
 
     fun stopGeofenceMonitoring() {
@@ -67,8 +71,6 @@ class GeofenceController(
         locationConnector.stopLocationUpdates(this)
         locationState = LocationState.UNAVAILABLE
         updateGeofenceIcon()
-        Log.w(TAG, "stopGeofenceMonitoring() CALLED")
-        Exception().printStackTrace()        
     }
 
     override fun onLocationChanged(location: Location) {
@@ -111,7 +113,7 @@ class GeofenceController(
         }
     }
 
-    private fun updateGeofenceIcon() {
+    private fun updateGeofenceIcon(forcedRedraw: Boolean = false) {
         val visibility = if (appPreferences.getGeofenceEnabled()) ImageView.VISIBLE else ImageView.GONE
         val icon = if (!appPreferences.getGeofenceEnabled()) {
              ICON_LOCATION_UNAVAILABLE
@@ -122,7 +124,7 @@ class GeofenceController(
                 LocationState.RELIABLE -> if (geofence.getIsWithinGeofence()) ICON_INSIDE_GEOFENCE else ICON_OUTSIDE_GEOFENCE
             }
         }
-        if (lastIcon != icon || geofenceIconView?.visibility != visibility) {
+        if (lastIcon != icon || geofenceIconView?.visibility != visibility || forcedRedraw) {
             Log.d(TAG, "Updating geofence icon. New Icon: $icon, Visibility: $visibility")
             geofenceIconView?.setImageResource(icon)
             geofenceIconView?.visibility = visibility
