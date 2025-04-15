@@ -67,6 +67,8 @@ class GeofenceController(
         locationConnector.stopLocationUpdates(this)
         locationState = LocationState.UNAVAILABLE
         updateGeofenceIcon()
+        Log.w(TAG, "stopGeofenceMonitoring() CALLED")
+        Exception().printStackTrace()        
     }
 
     override fun onLocationChanged(location: Location) {
