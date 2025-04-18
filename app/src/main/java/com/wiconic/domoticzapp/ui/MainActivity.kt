@@ -118,9 +118,6 @@
 
         override fun onCreateOptionsMenu(menu: Menu): Boolean {
             menuInflater.inflate(R.menu.main_menu, menu)
-            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-                menu.findItem(R.id.action_settings)?.isVisible = false
-            }
             return true
         }
 
