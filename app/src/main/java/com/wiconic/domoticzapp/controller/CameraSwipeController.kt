@@ -41,7 +41,7 @@ class CameraSwipeController(
     }
 
     private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 25
+        private val SWIPE_THRESHOLD = 150
         private var lastActionTime: Long = 0
         private val MIN_ACTION_INTERVAL = 500L
 

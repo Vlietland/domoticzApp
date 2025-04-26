@@ -37,7 +37,7 @@ class AlertSwipeController(
     }
 
     private inner class GestureListener : GestureDetector.SimpleOnGestureListener() {
-        private val SWIPE_THRESHOLD = 25
+        private val SWIPE_THRESHOLD = 400
         private val SWIPE_VELOCITY_THRESHOLD = 25
         private var lastActionTime: Long = 0
         private val MIN_ACTION_INTERVAL = 500L
